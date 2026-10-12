@@ -50,7 +50,7 @@ form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .opciones input { position: absolute; opacity: 0; pointer-events: none; }
 .opciones label:has(input:checked) { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: var(--chip); }
 .opciones label:has(input:focus-visible) { outline: 2px solid var(--oro); outline-offset: 2px; }
-@media (max-width: 520px) { .opciones { grid-template-columns: 1fr !important; } .prod { grid-template-columns: 1fr; } .prod .ctrl { justify-content: flex-start; } }
+@media (max-width: 520px) { .opciones { grid-template-columns: 1fr !important; } }
 @media (max-width: 820px) { .layout.con-camp .aside { order: 0; } .layout.con-camp .aside img { aspect-ratio: 4 / 5; } }
 .catalogo { display: grid; gap: 8px; }
 .prod { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 12px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
@@ -72,6 +72,7 @@ form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .btn-link.sec { background: transparent; color: var(--ink); border: 1px solid var(--line); }
 .resumen { text-align: left; background: var(--chip); border-radius: 12px; padding: 12px 16px; width: 100%; max-width: 420px; }
 .codigo { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 1.4rem; font-weight: 800; letter-spacing: .12em; }
+@media (max-width: 600px) { .prod { grid-template-columns: 1fr; } .prod .ctrl { justify-content: flex-start; } }
 footer { text-align: center; color: var(--muted); font-size: .85rem; padding-block: 0 32px; }
 footer a { color: inherit; }
 @media (max-width: 820px) {
@@ -106,11 +107,14 @@ footer a { color: inherit; }
       <h2>Tus datos</h2>
       <p class="sub">Solo te toma un minuto. Los campos con <span class="req">*</span> son obligatorios.</p>
       <form id="form" novalidate>
-        <div class="field full"><label for="nombre">Nombre y apellido <span class="req">*</span></label><input id="nombre" name="nombre" autocomplete="name" required maxlength="120"></div>
-        <div class="field"><label for="celular">Celular / WhatsApp <span class="req">*</span></label><input id="celular" name="celular" type="tel" inputmode="tel" autocomplete="tel" placeholder="9xx xxx xxx" maxlength="30"></div>
-        <div class="field"><label for="email">Correo</label><input id="email" name="email" type="email" autocomplete="email" maxlength="160"></div>
-        <div class="field"><label for="instagram">Instagram</label><input id="instagram" name="instagram" placeholder="@usuario" maxlength="60" autocapitalize="off"></div>
-        <div class="field"><label for="ciudad">Ciudad / distrito</label><input id="ciudad" name="ciudad" placeholder="Ej. Miraflores, Lima" maxlength="120"></div>
+        <div class="field full"><label for="nombre">Nombres y apellidos <span class="req">*</span></label><input id="nombre" name="nombre" autocomplete="name" required maxlength="120"></div>
+        <div class="field"><label for="dni">DNI <span class="req rc">*</span></label><input id="dni" name="dni" inputmode="numeric" maxlength="15" placeholder="8 dígitos (o carné de extranjería)"></div>
+        <div class="field"><label for="celular">Teléfono de contacto <span class="req">*</span></label><input id="celular" name="celular" type="tel" inputmode="tel" autocomplete="tel" placeholder="9xx xxx xxx" maxlength="30"></div>
+        <div class="field full"><label for="email">Correo</label><input id="email" name="email" type="email" autocomplete="email" maxlength="160"></div>
+        <div class="field full"><label for="direccion">Dirección de envío <span class="req rc">*</span></label><input id="direccion" name="direccion" autocomplete="street-address" maxlength="250" placeholder="Av. / Jr. / Calle, número, dpto."></div>
+        <div class="field full"><label for="referencia">Referencia</label><input id="referencia" name="referencia" maxlength="250" placeholder="Ej. Frente al parque, portón negro"></div>
+        <div class="field"><label for="distrito">Distrito <span class="req rc">*</span></label><input id="distrito" name="distrito" maxlength="80"></div>
+        <div class="field"><label for="provincia">Provincia o departamento <span class="req rc">*</span></label><input id="provincia" name="provincia" maxlength="80" placeholder="Ej. Lima, Arequipa"></div>
         <div class="field"><label for="cumple">Tu cumpleaños</label><input id="cumple" name="cumple" type="date"></div>
         <div class="field"><label for="canal">¿Cómo nos conociste?</label>
           <select id="canal" name="canal">
@@ -118,13 +122,11 @@ footer a { color: inherit; }
             <option>Instagram</option><option>Página web</option><option>WhatsApp</option>
             <option>Feria / evento</option><option>Parroquia / grupo</option><option>Recomendación</option><option>Otro</option>
           </select></div>
-        <div class="field full"><span class="lbl">¿Cuál es tu color de agenda favorito?</span>
-          <div class="pills swatch-big" role="radiogroup" aria-label="Color favorito">
-            <label><input type="radio" name="color" value="borgona"><span class="dot" style="background:var(--borgona)"></span>Borgoña</label>
-            <label><input type="radio" name="color" value="rose"><span class="dot" style="background:var(--rose)"></span>Rosé</label>
-            <label><input type="radio" name="color" value="olivo"><span class="dot" style="background:var(--olivo)"></span>Olivo</label>
-            <label><input type="radio" name="color" value="uva"><span class="dot" style="background:var(--uva)"></span>Uva</label>
-          </div></div>
+        <label class="consent field full" for="regalo" style="color:var(--ink);font-weight:700"><input type="checkbox" id="regalo"> Es para regalo 🎁</label>
+        <div class="field full" id="regalo-box" hidden><label for="regalo-para">¿Para quién es la agenda?</label>
+          <textarea id="regalo-para" maxlength="500" placeholder="Nombre de la persona y, si quieres, una dedicatoria o indicaciones"></textarea></div>
+        <div class="field full"><label for="comentario">Comentario adicional</label>
+          <textarea id="comentario" maxlength="1000" placeholder="Cualquier detalle que quieras contarnos"></textarea></div>
 
         <!-- Compra -->
         <div class="compra" id="compra" hidden>
@@ -284,10 +286,14 @@ $("#copiar-num").addEventListener("click", async () => {
 });
 
 function modo() { return document.querySelector('input[name="modo"]:checked')?.value || "solo"; }
+function marcarObligatorios() { const c = !!campana && modo() === "yape"; document.querySelectorAll(".rc").forEach((e) => (e.hidden = !c)); }
+$("#regalo").addEventListener("change", () => { $("#regalo-box").hidden = !$("#regalo").checked; });
 document.querySelectorAll('input[name="modo"]').forEach((r) => r.addEventListener("change", () => {
   $("#bloque-web").hidden = modo() !== "web"; $("#bloque-yape").hidden = modo() !== "yape";
   $("#enviar").textContent = modo() === "yape" ? "Enviar mi pedido" : (campana?.boton || "Registrarme");
+  marcarObligatorios();
 }));
+marcarObligatorios();
 
 function showError(msg) { const e = $("#error"); e.textContent = msg; e.hidden = !msg; }
 
@@ -301,18 +307,23 @@ $("#form").addEventListener("submit", async (ev) => {
   const email = val("email");
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError("Revisa tu correo, parece que tiene un error."); $("#email").focus(); return; }
   const comprando = campana && modo() === "yape";
+  if (comprando) {
+    const dni = (val("dni") || "").replace(/\s/g, "");
+    if (!/^[0-9A-Za-z]{8,12}$/.test(dni)) { showError("Escribe tu DNI (8 dígitos) o carné de extranjería."); $("#dni").focus(); return; }
+    for (const [id, n] of [["direccion", "tu dirección de envío"], ["distrito", "el distrito"], ["provincia", "la provincia o departamento"]]) {
+      if (!val(id) || val(id).length < 2) { showError(`Escribe ${n}.`); $("#" + id).focus(); return; }
+    }
+  }
   const archivo = $("#comprobante").files[0];
   if (comprando && !carrito.length) { showError("Agrega al menos un producto a tu pedido."); return; }
   if (comprando && !archivo) { showError("Sube la captura de tu pago de Yape o Plin."); $("#comprobante").focus(); return; }
   if (comprando && archivo.size > 8 * 1024 * 1024) { showError("La captura pesa más de 8 MB. Toma un pantallazo y súbelo de nuevo."); return; }
   if (!$("#datos").checked) { showError("Para continuar, marca la autorización de uso de datos."); $("#datos").focus(); return; }
 
-  let instagram = val("instagram");
-  if (instagram && !instagram.startsWith("@")) instagram = "@" + instagram;
+  const esRegalo = $("#regalo").checked, regaloPara = esRegalo ? val("regalo-para") : null, comentario = val("comentario");
   const fila = {
-    nombre, celular, email, instagram,
-    ciudad: val("ciudad"), cumple: val("cumple"), canal: val("canal"),
-    color: document.querySelector('input[name="color"]:checked')?.value || null,
+    nombre, celular, email, dni: val("dni"), direccion: val("direccion"), referencia: val("referencia"),
+    distrito: val("distrito"), provincia: val("provincia"), cumple: val("cumple"), canal: val("canal"),
     acepta_novedades: $("#novedades").checked, acepta_datos: true,
     campana_id: campana?.id || null,
   };
@@ -320,7 +331,8 @@ $("#form").addEventListener("submit", async (ev) => {
   const fin = () => { btn.disabled = false; btn.textContent = texto; };
 
   if (!comprando) {
-    const { error } = await sb.from("clientes").insert(fila);
+    const nota = [esRegalo ? "Regalo: " + (regaloPara || "sí") : null, comentario].filter(Boolean).join(" · ") || null;
+    const { error } = await sb.from("clientes").insert({ ...fila, comentario: nota });
     fin();
     if (error) { showError("No pudimos guardar tus datos. Revisa tu conexión e inténtalo de nuevo."); return; }
     gracias(nombre, null);
@@ -334,6 +346,7 @@ $("#form").addEventListener("submit", async (ev) => {
   if (up.error) { fin(); showError("No se pudo subir la captura. Prueba con otra imagen (JPG o PNG)."); return; }
   const { data: codigo, error } = await sb.rpc("crear_pedido", { datos: {
     ...fila, metodo: document.querySelector('input[name="metodo"]:checked').value, comprobante: ruta,
+    es_regalo: esRegalo, regalo_para: regaloPara, comentario,
     items: carrito.map(({ producto, color, cantidad }) => ({ producto, color, cantidad })),
   } });
   fin();
@@ -351,7 +364,7 @@ function gracias(nombre, codigo) {
     $("#t-resumen").innerHTML = carrito.map((l) => `<div class="linea"><span>${esc(textoLinea(l))}</span><span>${soles(l.cantidad * l.precio)}</span></div>`).join("") +
       `<div class="total"><span>Total</span><span>${soles(total)}</span></div>`;
     const msg = `Hola Megalücuma 💛 Soy ${nombre}. Ya pagué mi pedido #${codigo}${campana ? " de " + campana.titulo : ""}:\n` +
-      carrito.map((l) => "• " + textoLinea(l)).join("\n") + `\nTotal: ${soles(total)}\nAcabo de subir la captura del pago.`;
+      carrito.map((l) => "• " + textoLinea(l)).join("\n") + `\nTotal: ${soles(total)}` + ($("#regalo").checked ? "\n🎁 Es para regalo" : "") + `\nAcabo de subir la captura del pago.`;
     $("#t-wa").href = `https://wa.me/${(ajustes.whatsapp || "51991807370").replace(/\D/g, "")}?text=${encodeURIComponent(msg)}`;
     $("#thanks-pedido").hidden = false;
   } else if (campana?.mensaje_gracias) {

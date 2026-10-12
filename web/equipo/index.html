@@ -140,17 +140,16 @@ form.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding:
     <div id="p-registros" style="display:grid;gap:18px">
       <section class="summary" aria-label="Resumen">
         <div class="stat total"><span class="k" id="s-total-k">Registros</span><span class="v" id="s-total">0</span></div>
-        <div class="stat"><span class="k"><span class="dot" style="background:var(--borgona)"></span>Borgoña</span><span class="v" id="s-borgona">0</span></div>
-        <div class="stat"><span class="k"><span class="dot" style="background:var(--rose)"></span>Rosé</span><span class="v" id="s-rose">0</span></div>
-        <div class="stat"><span class="k"><span class="dot" style="background:var(--olivo)"></span>Olivo</span><span class="v" id="s-olivo">0</span></div>
-        <div class="stat"><span class="k"><span class="dot" style="background:var(--uva)"></span>Uva</span><span class="v" id="s-uva">0</span></div>
+        <div class="stat"><span class="k">Compraron</span><span class="v" id="s-compraron">0</span></div>
+        <div class="stat"><span class="k">Nuevos (7 días)</span><span class="v" id="s-nuevos">0</span></div>
+        <div class="stat"><span class="k">Aceptan novedades</span><span class="v" id="s-novedades">0</span></div>
+        <div class="stat"><span class="k">Cumplen este mes</span><span class="v" id="s-cumple">0</span></div>
       </section>
       <div class="toolbar">
-        <input id="q" class="search" type="search" placeholder="Buscar por nombre, celular, correo o Instagram" aria-label="Buscar">
+        <input id="q" class="search" type="search" placeholder="Buscar por nombre, DNI, celular, correo o distrito" aria-label="Buscar">
         <select id="f-campana" aria-label="Filtrar por campaña"><option value="">Todas las campañas</option></select>
-        <select id="f-color" aria-label="Filtrar por color">
-          <option value="">Todos los colores</option>
-          <option value="borgona">Borgoña</option><option value="rose">Rosé</option><option value="olivo">Olivo</option><option value="uva">Uva</option>
+        <select id="f-color" aria-label="Filtrar">
+          <option value="">Todos</option><option value="compraron">Solo los que compraron</option><option value="cumple">Cumplen este mes</option>
         </select>
         <button type="button" class="ghost" id="btn-refrescar">Actualizar</button>
         <button type="button" class="ghost" id="btn-export">Exportar CSV</button>
@@ -209,14 +208,17 @@ form.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding:
     <div class="field full"><label for="c-nombre">Nombre y apellido <span class="req">*</span></label><input id="c-nombre" required maxlength="120"></div>
     <div class="field"><label for="c-celular">Celular / WhatsApp</label><input id="c-celular" inputmode="tel" maxlength="30"></div>
     <div class="field"><label for="c-email">Correo</label><input id="c-email" type="email" maxlength="160"></div>
-    <div class="field"><label for="c-instagram">Instagram</label><input id="c-instagram" maxlength="60"></div>
-    <div class="field"><label for="c-ciudad">Ciudad / distrito</label><input id="c-ciudad" maxlength="120"></div>
+    <div class="field"><label for="c-dni">DNI</label><input id="c-dni" maxlength="15"></div>
+    <div class="field full"><label for="c-direccion">Dirección de envío</label><input id="c-direccion" maxlength="250"></div>
+    <div class="field full"><label for="c-referencia">Referencia</label><input id="c-referencia" maxlength="250"></div>
+    <div class="field"><label for="c-distrito">Distrito</label><input id="c-distrito" maxlength="80"></div>
+    <div class="field"><label for="c-provincia">Provincia o departamento</label><input id="c-provincia" maxlength="80"></div>
     <div class="field"><label for="c-cumple">Cumpleaños</label><input id="c-cumple" type="date"></div>
     <div class="field"><label for="c-canal">¿Cómo nos conoció?</label><select id="c-canal"></select></div>
     <div class="field full"><label for="c-campana">Campaña</label><select id="c-campana"></select></div>
-    <div class="field full"><span class="lbl">Color de agenda favorito</span><div class="pills" id="c-color"></div></div>
     <div class="field full"><span class="lbl">Productos que compró</span><div class="pills" id="c-productos"></div></div>
     <div class="field full"><label for="c-notas">Notas internas</label><textarea id="c-notas" maxlength="2000" placeholder="Pedidos especiales, preferencias, seguimiento…"></textarea></div>
+    <div class="field full"><label for="c-comentario">Comentario del cliente</label><textarea id="c-comentario" maxlength="1000"></textarea></div>
     <div class="readonly-box" id="c-meta" hidden></div>
     <p class="form-error field full" id="c-error" hidden></p>
     <div class="dlg-foot">
@@ -296,7 +298,6 @@ async function copiar(texto) {
 
 // ---------- Opciones de formularios ----------
 $("#c-canal").innerHTML = '<option value="">Sin indicar</option>' + CANALES.map((c) => `<option>${c}</option>`).join("");
-$("#c-color").innerHTML = Object.entries(COLORES).map(([k, [n, c]]) => `<label><input type="radio" name="ccolor" value="${k}"><span class="dot" style="background:${c}"></span>${n}</label>`).join("") + '<label><input type="radio" name="ccolor" value=""> Sin indicar</label>';
 $("#c-productos").innerHTML = PRODUCTOS.map((p, i) => `<label><input type="checkbox" id="c-prod-${i}" value="${p}">${p}</label>`).join("");
 $("#link-general").textContent = " " + ORIGEN + "/";
 
@@ -365,22 +366,28 @@ $("#tab-registros").addEventListener("click", () => tab("r"));
 $("#tab-campanas").addEventListener("click", () => tab("k"));
 
 // ---------- Registros ----------
+const cumpleMes = (c) => c.cumple && Number(c.cumple.slice(5, 7)) === new Date().getMonth() + 1;
+const compro = (c) => pedidos.some((p) => p.cliente_id === c.id && p.estado !== "cancelado") || (c.productos || []).length > 0;
 function filtrados() {
   const q = $("#q").value.trim().toLowerCase(), fk = $("#f-campana").value, fc = $("#f-color").value;
   return clientes.filter((c) =>
-    (!fk || (fk === "ninguna" ? !c.campana_id : c.campana_id === fk)) && (!fc || c.color === fc) &&
-    (!q || [c.nombre, c.celular, c.email, c.instagram, c.ciudad].some((x) => String(x || "").toLowerCase().includes(q))));
+    (!fk || (fk === "ninguna" ? !c.campana_id : c.campana_id === fk)) &&
+    (!fc || (fc === "compraron" ? compro(c) : cumpleMes(c))) &&
+    (!q || [c.nombre, c.dni, c.celular, c.email, c.distrito, c.provincia].some((x) => String(x || "").toLowerCase().includes(q))));
 }
 function renderClientes() {
   const fk = $("#f-campana").value;
   const base = clientes.filter((c) => !fk || (fk === "ninguna" ? !c.campana_id : c.campana_id === fk));
   $("#s-total").textContent = base.length;
   $("#s-total-k").textContent = fk ? "Registros en esta campaña" : "Registros en total";
-  for (const k of Object.keys(COLORES)) $("#s-" + k).textContent = base.filter((c) => c.color === k).length;
+  $("#s-compraron").textContent = base.filter(compro).length;
+  $("#s-nuevos").textContent = base.filter((c) => new Date(c.creado).getTime() > Date.now() - 7 * 864e5).length;
+  $("#s-novedades").textContent = base.filter((c) => c.acepta_novedades).length;
+  $("#s-cumple").textContent = base.filter(cumpleMes).length;
   const rows = filtrados(), list = $("#list"), cl = $("#count-line");
   if (!clientes.length) {
     cl.hidden = true;
-    list.innerHTML = `<div class="empty"><h2>Aún no hay registros</h2><p>Cuando alguien llene el formulario aparecerá aquí, con su campaña, color favorito y datos de contacto. Comparte el enlace desde la pestaña Campañas, o registra a alguien con “+ Registrar cliente”.</p></div>`;
+    list.innerHTML = `<div class="empty"><h2>Aún no hay registros</h2><p>Cuando alguien llene el formulario aparecerá aquí, con su campaña, datos de contacto y dirección de envío. Comparte el enlace desde la pestaña Campañas, o registra a alguien con “+ Registrar cliente”.</p></div>`;
     return;
   }
   cl.hidden = false;
@@ -389,14 +396,14 @@ function renderClientes() {
   const hace7 = Date.now() - 7 * 864e5;
   const nombreCamp = Object.fromEntries(campanas.map((k) => [k.id, k.titulo]));
   list.innerHTML = rows.map((c) => {
-    const col = COLORES[c.color];
-    const contacto = [c.celular, c.instagram].filter(Boolean).map(esc).join(" · ") || "Sin contacto";
-    const lineas = [c.email, c.ciudad].filter(Boolean).map(esc).join(" · ");
+    const col = pedidos.some((p) => p.cliente_id === c.id) ? ["", "var(--accent)"] : null;
+    const contacto = [c.celular, c.dni ? "DNI " + c.dni : null].filter(Boolean).map(esc).join(" · ") || "Sin contacto";
+    const lineas = [c.email, [c.distrito, c.provincia].filter(Boolean).join(", ")].filter(Boolean).map(esc).join(" · ");
     const chips = [
       new Date(c.creado).getTime() > hace7 ? '<span class="chip new">Nuevo</span>' : "",
       ...pedidos.filter((p) => p.cliente_id === c.id).map((p) => `<span class="chip">🛍 #${esc(p.codigo)}</span>`),
       c.campana_id && nombreCamp[c.campana_id] ? `<span class="chip">${esc(nombreCamp[c.campana_id])}</span>` : "",
-      col ? `<span class="chip"><span class="dot" style="background:${col[1]};width:8px;height:8px"></span>${col[0]}</span>` : "",
+      c.comentario ? '<span class="chip">💬 Comentario</span>' : "",
       ...(c.productos || []).map((p) => `<span class="chip">${esc(p)}</span>`),
     ].join("");
     return `<article class="card">
@@ -415,9 +422,8 @@ $("#btn-nuevo").addEventListener("click", () => abrirCliente(null));
 function abrirCliente(c) {
   editCliente = c; confirmar = false;
   $("#dc-title").textContent = c ? c.nombre : "Registrar cliente";
-  for (const k of ["nombre", "celular", "email", "instagram", "ciudad", "cumple", "canal", "notas"]) $("#c-" + k).value = c?.[k] || "";
+  for (const k of ["nombre", "celular", "email", "dni", "direccion", "referencia", "distrito", "provincia", "cumple", "canal", "notas", "comentario"]) $("#c-" + k).value = c?.[k] || "";
   $("#c-campana").value = c?.campana_id || ($("#f-campana").value !== "ninguna" ? $("#f-campana").value : "");
-  const r = document.querySelector(`#c-color input[value="${c?.color || ""}"]`); if (r) r.checked = true;
   document.querySelectorAll("#c-productos input").forEach((i) => (i.checked = (c?.productos || []).includes(i.value)));
   $("#c-meta").hidden = !c;
   if (c) $("#c-meta").textContent = `${c.origen === "formulario" ? "Se registró por el formulario" : "Registrado por el equipo"} el ${fecha(c.creado, { day: "numeric", month: "long", year: "numeric" })}. Novedades: ${c.acepta_novedades ? "sí acepta" : "no acepta"}. Uso de datos: ${c.acepta_datos ? "autorizado" : "no indicado"}.`;
@@ -429,9 +435,9 @@ $("#f-cliente").addEventListener("submit", async (ev) => {
   const err = $("#c-error"), nombre = v("c-nombre");
   if (!nombre || nombre.length < 2) { err.textContent = "Escribe el nombre del cliente."; err.hidden = false; return; }
   const fila = {
-    nombre, celular: v("c-celular"), email: v("c-email"), instagram: v("c-instagram"), ciudad: v("c-ciudad"),
+    nombre, celular: v("c-celular"), email: v("c-email"), dni: v("c-dni"), direccion: v("c-direccion"), referencia: v("c-referencia"),
+    distrito: v("c-distrito"), provincia: v("c-provincia"), comentario: v("c-comentario"),
     cumple: v("c-cumple"), canal: v("c-canal"), notas: v("c-notas"), campana_id: v("c-campana"),
-    color: document.querySelector("#c-color input:checked")?.value || null,
     productos: [...document.querySelectorAll("#c-productos input:checked")].map((i) => i.value),
   };
   $("#c-guardar").disabled = true;
@@ -453,8 +459,8 @@ $("#btn-export").addEventListener("click", () => {
   const rows = filtrados();
   const nombreCamp = Object.fromEntries(campanas.map((k) => [k.id, k.titulo]));
   const cols = [["Fecha", (c) => c.creado.slice(0, 10)], ["Nombre", (c) => c.nombre], ["Celular", (c) => c.celular], ["Correo", (c) => c.email],
-    ["Instagram", (c) => c.instagram], ["Ciudad", (c) => c.ciudad], ["Cumpleaños", (c) => c.cumple], ["Cómo nos conoció", (c) => c.canal],
-    ["Color", (c) => COLORES[c.color]?.[0]], ["Campaña", (c) => nombreCamp[c.campana_id]], ["Productos", (c) => (c.productos || []).join("; ")],
+    ["DNI", (c) => c.dni], ["Dirección", (c) => c.direccion], ["Referencia", (c) => c.referencia], ["Distrito", (c) => c.distrito], ["Provincia", (c) => c.provincia],
+    ["Cumpleaños", (c) => c.cumple], ["Cómo nos conoció", (c) => c.canal], ["Comentario", (c) => c.comentario], ["Campaña", (c) => nombreCamp[c.campana_id]], ["Productos", (c) => (c.productos || []).join("; ")],
     ["Acepta novedades", (c) => (c.acepta_novedades ? "Sí" : "No")], ["Origen", (c) => c.origen], ["Notas", (c) => c.notas]];
   const cell = (x) => `"${String(x ?? "").replace(/"/g, '""')}"`;
   const csv = "﻿" + [cols.map((c) => cell(c[0])).join(",")].concat(rows.map((r) => cols.map((c) => cell(c[1](r))).join(","))).join("\r\n");
@@ -611,7 +617,7 @@ function pedidosFiltrados() {
   const q = $("#pq").value.trim().toLowerCase(), fe = $("#pf-estado").value, fk = $("#pf-campana").value;
   const cli = Object.fromEntries(clientes.map((c) => [c.id, c]));
   return pedidos.filter((p) => (!fe || p.estado === fe) && (!fk || p.campana_id === fk) &&
-    (!q || [p.codigo, cli[p.cliente_id]?.nombre, cli[p.cliente_id]?.celular].some((x) => String(x || "").toLowerCase().includes(q))));
+    (!q || [p.codigo, cli[p.cliente_id]?.nombre, cli[p.cliente_id]?.celular, cli[p.cliente_id]?.dni].some((x) => String(x || "").toLowerCase().includes(q))));
 }
 function renderPedidos() {
   const pend = pedidos.filter((p) => p.estado === "por_confirmar").length;
@@ -632,7 +638,10 @@ function renderPedidos() {
       <div style="min-width:0"><div class="cod">#${esc(p.codigo)}</div><div class="name">${esc(c.nombre || "Cliente eliminado")}</div>
         <div class="sub">${esc(c.celular || "")}${wa ? ` · <a href="${wa}" target="_blank" rel="noopener">WhatsApp</a>` : ""}</div>
         <div class="sub">${fecha(p.creado, { day: "numeric", month: "short" })} · ${p.metodo === "plin" ? "Plin" : "Yape"}${camp[p.campana_id] ? " · " + esc(camp[p.campana_id]) : ""}</div></div>
-      <div style="min-width:0"><div class="items">${(p.items || []).map((l) => esc(lineaTxt(l))).join("<br>")}</div><div class="monto">${soles(p.total)}</div></div>
+      <div style="min-width:0"><div class="items">${(p.items || []).map((l) => esc(lineaTxt(l))).join("<br>")}</div><div class="monto">${soles(p.total)}</div>
+        <div class="sub">📦 ${esc([c.direccion, c.distrito, c.provincia].filter(Boolean).join(", ") || "Sin dirección")}${c.referencia ? " · Ref: " + esc(c.referencia) : ""}${c.dni ? " · DNI " + esc(c.dni) : ""}</div>
+        ${p.es_regalo ? `<div class="sub">🎁 <strong>Regalo</strong>${p.regalo_para ? ": " + esc(p.regalo_para) : ""}</div>` : ""}
+        ${p.comentario ? `<div class="sub">💬 ${esc(p.comentario)}</div>` : ""}</div>
       <div class="actions" style="flex-direction:column;align-items:stretch">
         <select data-estado="${p.id}" aria-label="Estado del pedido ${esc(p.codigo)}">${Object.entries(ESTADOS).map(([k, n]) => `<option value="${k}" ${k === p.estado ? "selected" : ""}>${n}</option>`).join("")}</select>
         <button type="button" data-comp="${p.id}">Ver comprobante</button>
@@ -661,7 +670,10 @@ $("#ped-list").addEventListener("click", async (e) => {
 $("#btn-export-ped").addEventListener("click", () => {
   const cli = Object.fromEntries(clientes.map((c) => [c.id, c])), camp = Object.fromEntries(campanas.map((k) => [k.id, k.titulo]));
   const cols = [["Fecha", (p) => p.creado.slice(0, 10)], ["Código", (p) => p.codigo], ["Cliente", (p) => cli[p.cliente_id]?.nombre], ["Celular", (p) => cli[p.cliente_id]?.celular],
+    ["DNI", (p) => cli[p.cliente_id]?.dni], ["Dirección", (p) => cli[p.cliente_id]?.direccion], ["Referencia", (p) => cli[p.cliente_id]?.referencia],
+    ["Distrito", (p) => cli[p.cliente_id]?.distrito], ["Provincia", (p) => cli[p.cliente_id]?.provincia],
     ["Productos", (p) => (p.items || []).map(lineaTxt).join("; ")], ["Total", (p) => Number(p.total).toFixed(2)], ["Método", (p) => p.metodo],
+    ["Regalo", (p) => (p.es_regalo ? "Sí" + (p.regalo_para ? ": " + p.regalo_para : "") : "No")], ["Comentario", (p) => p.comentario],
     ["Estado", (p) => ESTADOS[p.estado]], ["Campaña", (p) => camp[p.campana_id]]];
   const cell = (x) => `"${String(x ?? "").replace(/"/g, '""')}"`;
   const csv = "﻿" + [cols.map((c) => cell(c[0])).join(",")].concat(pedidosFiltrados().map((r) => cols.map((c) => cell(c[1](r))).join(","))).join("\r\n");
