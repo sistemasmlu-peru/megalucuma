@@ -1,0 +1,391 @@
+<title>Clientes Megalücuma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: banda Borgoña con logo y ornamento dorado; debajo, resumen por color de agenda, barra de búsqueda y fichas de clientes. */
+:root {
+  --borgona: #4c1825; --olivo: #4a4526; --rose: #bb8d83; --uva: #694463; --oro: #c3934b;
+  --bg: #faf6f4; --surface: #ffffff; --ink: #2d1a1f; --muted: #7b6367; --line: #ecdfdb;
+  --chip: #f4e9e6; --accent: #4c1825; --accent-ink: #ffffff; --danger: #a3302f; --ok: #4a4526;
+  --f-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --f-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1b1114; --surface: #251a1e; --ink: #f4e9e7; --muted: #b9a1a5; --line: #3b2a2f;
+    --chip: #33242a; --accent: #d7a79c; --accent-ink: #2a1217; --danger: #ec8a7d; --ok: #c9c08d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1b1114; --surface: #251a1e; --ink: #f4e9e7; --muted: #b9a1a5; --line: #3b2a2f;
+  --chip: #33242a; --accent: #d7a79c; --accent-ink: #2a1217; --danger: #ec8a7d; --ok: #c9c08d;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 16px; }
+
+/* Banda de marca: siempre Borgoña, en ambos temas */
+.brand {
+  background-color: var(--borgona);
+  background-image: url("{{ORNAMENTO}}");
+  background-size: 520px auto; background-position: right -80px center; background-repeat: no-repeat;
+  color: #fff;
+}
+.brand .wrap { display: flex; align-items: center; gap: 18px; padding-block: 22px; flex-wrap: wrap; }
+.brand img { height: 46px; width: auto; }
+.brand h1 { font-family: var(--f-display); font-weight: 500; font-size: 1.6rem; margin: 0; letter-spacing: .2px; text-wrap: balance; }
+.brand p { margin: 0; color: #ead3cd; font-size: .9rem; }
+
+main.wrap { display: grid; gap: 22px; padding-block: 22px 48px; }
+
+/* Resumen */
+.summary { display: grid; grid-template-columns: 1.2fr repeat(4, 1fr); gap: 10px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 2px; min-width: 0; }
+.stat .k { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 700; display: flex; align-items: center; gap: 6px; }
+.stat .v { font-family: var(--f-display); font-size: 1.7rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat.total { background: var(--chip); border-color: transparent; }
+.dot { width: 11px; height: 11px; border-radius: 50%; flex: none; display: inline-block; }
+@media (max-width: 720px) { .summary { grid-template-columns: repeat(2, 1fr); } .stat.total { grid-column: 1 / -1; } }
+
+/* Barra de herramientas */
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.toolbar .search { flex: 1 1 240px; min-width: 0; }
+input, select, textarea {
+  font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: 9px 12px; width: 100%;
+}
+textarea { min-height: 80px; resize: vertical; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--oro); outline-offset: 2px; }
+.toolbar select { width: auto; }
+button { font: inherit; cursor: pointer; border-radius: 999px; padding: 9px 18px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.ghost { background: transparent; }
+button.danger { color: var(--danger); border-color: currentColor; background: transparent; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+
+.notice { border-radius: var(--radius); padding: 12px 16px; background: var(--chip); color: var(--ink); }
+.notice strong { display: block; }
+
+/* Lista */
+.count-line { color: var(--muted); font-size: .88rem; margin: 0; }
+.list { display: grid; gap: 10px; }
+.card {
+  display: grid; grid-template-columns: 6px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.2fr) auto; gap: 14px; align-items: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px 12px 0; overflow: hidden;
+}
+.card .stripe { align-self: stretch; margin-block: -12px; }
+.card .name { font-weight: 800; font-size: 1.02rem; overflow-wrap: anywhere; }
+.card .sub { color: var(--muted); font-size: .86rem; overflow-wrap: anywhere; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--chip); border-radius: 999px; padding: 2px 10px; font-size: .78rem; font-weight: 700; white-space: nowrap; }
+.card .actions { display: flex; gap: 6px; }
+.card .actions button { padding: 6px 14px; font-size: .85rem; }
+@media (max-width: 720px) {
+  .card { grid-template-columns: 6px minmax(0, 1fr); padding-right: 14px; }
+  .card > :not(.stripe) { grid-column: 2; }
+  .card .stripe { grid-row: 1 / span 4; }
+}
+.empty { text-align: center; padding: 40px 16px; background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius); display: grid; gap: 10px; justify-items: center; }
+.empty h2 { font-family: var(--f-display); font-weight: 500; margin: 0; font-size: 1.35rem; }
+.empty p { margin: 0; color: var(--muted); max-width: 46ch; }
+
+/* Formulario */
+dialog { border: none; border-radius: 18px; padding: 0; width: min(640px, calc(100vw - 32px)); background: var(--surface); color: var(--ink); max-height: calc(100vh - 32px); }
+dialog::backdrop { background: rgba(30, 10, 16, .55); }
+.dlg-head { background: var(--borgona); color: #fff; padding: 16px 22px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.dlg-head h2 { margin: 0; font-family: var(--f-display); font-weight: 500; font-size: 1.3rem; }
+.dlg-head button { background: transparent; color: #fff; border-color: rgba(255,255,255,.4); padding: 4px 12px; }
+form.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 20px 22px; }
+.field { display: grid; gap: 5px; min-width: 0; }
+.field.full { grid-column: 1 / -1; }
+.field > label, .field > .lbl { font-size: .74rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--muted); }
+.req { color: var(--danger); }
+@media (max-width: 560px) { form.fields { grid-template-columns: 1fr; } }
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; }
+.swatches label, .checks label { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 8px; cursor: pointer; font-weight: 700; font-size: .88rem; }
+.swatches input, .checks input { width: auto; margin: 0; accent-color: var(--borgona); }
+.swatches label:has(input:checked), .checks label:has(input:checked) { border-color: var(--ink); background: var(--chip); }
+.checks { display: flex; flex-wrap: wrap; gap: 8px; }
+.dlg-foot { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 0 22px 20px; grid-column: 1 / -1; }
+.dlg-foot .right { display: flex; gap: 8px; margin-left: auto; }
+.form-error { grid-column: 1 / -1; color: var(--danger); font-weight: 700; margin: 0; }
+
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-weight: 700; box-shadow: 0 6px 20px rgba(0,0,0,.2); }
+@media (prefers-reduced-motion: no-preference) { .toast { animation: up .2s ease-out; } @keyframes up { from { transform: translate(-50%, 8px); opacity: 0; } } }
+</style>
+
+<header class="brand">
+  <div class="wrap">
+    <img src="{{LOGO}}" alt="Megalücuma">
+    <div>
+      <h1>Registro de clientes</h1>
+      <p>Papelería con misión · base compartida del equipo</p>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="notice" class="notice" hidden></div>
+
+  <section class="summary" aria-label="Resumen">
+    <div class="stat total"><span class="k">Clientes registrados</span><span class="v" id="s-total">0</span></div>
+    <div class="stat"><span class="k"><span class="dot" style="background:var(--borgona)"></span>Borgoña</span><span class="v" id="s-borgona">0</span></div>
+    <div class="stat"><span class="k"><span class="dot" style="background:var(--rose)"></span>Rosé</span><span class="v" id="s-rose">0</span></div>
+    <div class="stat"><span class="k"><span class="dot" style="background:var(--olivo)"></span>Olivo</span><span class="v" id="s-olivo">0</span></div>
+    <div class="stat"><span class="k"><span class="dot" style="background:var(--uva)"></span>Uva</span><span class="v" id="s-uva">0</span></div>
+  </section>
+
+  <div class="toolbar">
+    <input id="q" class="search" type="search" placeholder="Buscar por nombre, celular, correo o Instagram" aria-label="Buscar">
+    <select id="f-color" aria-label="Filtrar por color">
+      <option value="">Todos los colores</option>
+      <option value="borgona">Borgoña</option><option value="rose">Rosé</option>
+      <option value="olivo">Olivo</option><option value="uva">Uva</option>
+    </select>
+    <select id="f-canal" aria-label="Filtrar por canal">
+      <option value="">Todos los canales</option>
+    </select>
+    <button id="btn-export" class="ghost" type="button" hidden>Exportar CSV</button>
+    <button id="btn-new" class="primary" type="button">+ Nuevo cliente</button>
+  </div>
+
+  <p id="count-line" class="count-line" hidden></p>
+  <div id="list" class="list">
+    <div class="empty">
+      <h2>Aún no hay clientes registrados</h2>
+      <p>Aquí aparecerá cada clienta con su color de agenda favorito, lo que compró y por dónde llegó. Usa “+ Nuevo cliente” para registrar la primera.</p>
+    </div>
+  </div>
+</main>
+
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <div class="dlg-head">
+    <h2 id="dlg-title">Nuevo cliente</h2>
+    <button type="button" id="btn-close">Cerrar</button>
+  </div>
+  <form class="fields" id="form" novalidate>
+    <div class="field full"><label for="c-nombre">Nombre y apellido <span class="req">*</span></label><input id="c-nombre" autocomplete="off" required></div>
+    <div class="field"><label for="c-celular">Celular / WhatsApp</label><input id="c-celular" inputmode="tel" placeholder="9xx xxx xxx"></div>
+    <div class="field"><label for="c-email">Correo</label><input id="c-email" type="email"></div>
+    <div class="field"><label for="c-instagram">Instagram</label><input id="c-instagram" placeholder="@usuario"></div>
+    <div class="field"><label for="c-ciudad">Ciudad / distrito</label><input id="c-ciudad" placeholder="Ej. Miraflores, Lima"></div>
+    <div class="field"><label for="c-cumple">Cumpleaños</label><input id="c-cumple" type="date"></div>
+    <div class="field"><label for="c-canal">¿Cómo nos conoció?</label><select id="c-canal"></select></div>
+    <div class="field full"><span class="lbl">Color de agenda favorito</span>
+      <div class="swatches" id="c-color"></div></div>
+    <div class="field full"><span class="lbl">Productos que compró</span>
+      <div class="checks" id="c-productos"></div></div>
+    <div class="field full"><label for="c-notas">Notas</label><textarea id="c-notas" placeholder="Pedidos especiales, preferencias, intenciones de oración que compartió…"></textarea></div>
+    <p class="form-error" id="form-error" hidden></p>
+    <div class="dlg-foot">
+      <button type="button" class="danger" id="btn-delete" hidden>Eliminar</button>
+      <div class="right">
+        <button type="button" class="ghost" id="btn-cancel">Cancelar</button>
+        <button type="submit" class="primary" id="btn-save">Guardar</button>
+      </div>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+const COLORES = {
+  borgona: { n: "Borgoña", c: "var(--borgona)" },
+  rose:    { n: "Rosé",    c: "var(--rose)" },
+  olivo:   { n: "Olivo",   c: "var(--olivo)" },
+  uva:     { n: "Uva",     c: "var(--uva)" },
+};
+const CANALES = ["Instagram", "Página web", "WhatsApp", "Feria / evento", "Parroquia / grupo", "Recomendación", "Otro"];
+const PRODUCTOS = ["Agenda", "Journal", "Cuaderno", "Stickers", "Marcadores", "Otro"];
+
+const $ = (s) => document.querySelector(s);
+let db = null, col = null, downloads = null;
+let clientes = [], editId = null, readOnly = false, confirmDelete = false;
+
+// Opciones del formulario
+$("#c-canal").innerHTML = '<option value="">Sin indicar</option>' + CANALES.map(c => `<option>${c}</option>`).join("");
+$("#f-canal").innerHTML += CANALES.map(c => `<option>${c}</option>`).join("");
+$("#c-color").innerHTML = Object.entries(COLORES).map(([k, v]) =>
+  `<label><input type="radio" name="color" id="c-color-${k}" value="${k}"><span class="dot" style="background:${v.c}"></span>${v.n}</label>`).join("") +
+  `<label><input type="radio" name="color" id="c-color-none" value=""> Sin indicar</label>`;
+$("#c-productos").innerHTML = PRODUCTOS.map((p, i) =>
+  `<label><input type="checkbox" id="c-prod-${i}" value="${p}">${p}</label>`).join("");
+
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch])); }
+function toast(msg) { const t = $("#toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => t.hidden = true, 2600); }
+function notice(html) { const n = $("#notice"); n.innerHTML = html; n.hidden = !html; }
+function fmtFecha(iso) {
+  if (!iso) return "";
+  const [y, m, d] = iso.split("-").map(Number);
+  return new Date(y, m - 1, d).toLocaleDateString("es-PE", { day: "numeric", month: "long" });
+}
+
+function render() {
+  for (const k of Object.keys(COLORES)) $("#s-" + k).textContent = clientes.filter(c => c.color === k).length;
+  $("#s-total").textContent = clientes.length;
+  $("#btn-export").hidden = !downloads || clientes.length === 0;
+
+  const q = $("#q").value.trim().toLowerCase();
+  const fc = $("#f-color").value, fk = $("#f-canal").value;
+  const rows = clientes.filter(c =>
+    (!fc || c.color === fc) && (!fk || c.canal === fk) &&
+    (!q || [c.nombre, c.celular, c.email, c.instagram, c.ciudad].some(v => String(v || "").toLowerCase().includes(q))));
+
+  const list = $("#list");
+  const cl = $("#count-line");
+  if (clientes.length === 0) {
+    cl.hidden = true;
+    list.innerHTML = `<div class="empty"><h2>Aún no hay clientes registrados</h2>
+      <p>Aquí aparecerá cada clienta con su color de agenda favorito, lo que compró y por dónde llegó. Usa “+ Nuevo cliente” para registrar la primera.</p></div>`;
+    return;
+  }
+  cl.hidden = false;
+  cl.textContent = rows.length === clientes.length ? `${clientes.length} clientes` : `Mostrando ${rows.length} de ${clientes.length} clientes`;
+  if (rows.length === 0) {
+    list.innerHTML = `<div class="empty"><h2>Nadie coincide con la búsqueda</h2><p>Prueba con otro nombre o quita los filtros.</p></div>`;
+    return;
+  }
+  list.innerHTML = rows.map(c => {
+    const color = COLORES[c.color];
+    const contacto = [c.celular, c.instagram].filter(Boolean).map(esc).join(" · ");
+    const extra = [c.email, c.ciudad].filter(Boolean).map(esc).join(" · ");
+    const chips = [
+      color ? `<span class="chip"><span class="dot" style="background:${color.c};width:8px;height:8px;margin-right:4px"></span>${color.n}</span>` : "",
+      ...(c.productos || []).map(p => `<span class="chip">${esc(p)}</span>`),
+    ].join("");
+    return `<article class="card">
+      <span class="stripe" style="background:${color ? color.c : "var(--line)"}"></span>
+      <div style="min-width:0"><div class="name">${esc(c.nombre)}</div><div class="sub">${contacto || "Sin contacto"}</div></div>
+      <div style="min-width:0"><div class="sub">${extra}</div><div class="sub">${c.canal ? "Llegó por " + esc(c.canal) : ""}${c.cumple ? (c.canal ? " · " : "") + "Cumple el " + fmtFecha(c.cumple) : ""}</div></div>
+      <div class="chips">${chips}</div>
+      <div class="actions"><button type="button" data-edit="${esc(c.id)}">${readOnly ? "Ver" : "Editar"}</button></div>
+    </article>`;
+  }).join("");
+}
+
+function openForm(c) {
+  editId = c ? c.id : null;
+  confirmDelete = false;
+  $("#dlg-title").textContent = c ? (readOnly ? "Ficha de cliente" : "Editar cliente") : "Nuevo cliente";
+  $("#c-nombre").value = c?.nombre || "";
+  $("#c-celular").value = c?.celular || "";
+  $("#c-email").value = c?.email || "";
+  $("#c-instagram").value = c?.instagram || "";
+  $("#c-ciudad").value = c?.ciudad || "";
+  $("#c-cumple").value = c?.cumple || "";
+  $("#c-canal").value = c?.canal || "";
+  $("#c-notas").value = c?.notas || "";
+  const sel = document.querySelector(`#c-color input[value="${c?.color || ""}"]`);
+  if (sel) sel.checked = true;
+  document.querySelectorAll("#c-productos input").forEach(i => i.checked = (c?.productos || []).includes(i.value));
+  $("#form-error").hidden = true;
+  $("#btn-delete").hidden = !c || readOnly;
+  $("#btn-delete").textContent = "Eliminar";
+  $("#btn-save").hidden = readOnly;
+  $("#form").querySelectorAll("input, select, textarea").forEach(el => el.disabled = readOnly);
+  $("#dlg").showModal();
+  if (!readOnly) $("#c-nombre").focus();
+}
+
+function formError(msg) { const e = $("#form-error"); e.textContent = msg; e.hidden = !msg; }
+
+function handleWriteError(e) {
+  if (e?.code === "invalid_argument" || e?.code === "not_granted") {
+    readOnly = true;
+    $("#btn-new").disabled = true;
+    notice("<strong>Solo lectura</strong>Tu acceso a esta app no permite guardar cambios. Pide a quien la administra que te dé permiso de edición.");
+    formError("No tienes permiso para guardar cambios.");
+  } else if (e?.code === "quota_exceeded") {
+    formError("La base de datos está llena. Elimina registros antiguos o exporta y archiva antes de seguir.");
+  } else {
+    formError("No se pudo guardar. Revisa tu conexión e inténtalo otra vez.");
+  }
+}
+
+$("#form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  if (readOnly || !col) return;
+  const nombre = $("#c-nombre").value.trim();
+  if (!nombre) { formError("Escribe el nombre del cliente."); $("#c-nombre").focus(); return; }
+  const prev = editId ? clientes.find(c => c.id === editId) : null;
+  const now = new Date().toISOString();
+  const data = {
+    nombre,
+    celular: $("#c-celular").value.trim(),
+    email: $("#c-email").value.trim(),
+    instagram: $("#c-instagram").value.trim(),
+    ciudad: $("#c-ciudad").value.trim(),
+    cumple: $("#c-cumple").value,
+    canal: $("#c-canal").value,
+    color: document.querySelector("#c-color input:checked")?.value || "",
+    productos: [...document.querySelectorAll("#c-productos input:checked")].map(i => i.value),
+    notas: $("#c-notas").value.trim(),
+    creado: prev?.creado || now,
+    actualizado: now,
+  };
+  $("#btn-save").disabled = true;
+  try {
+    await (editId ? col.doc(editId) : col.doc()).set(data);
+    $("#dlg").close();
+    toast(editId ? "Cambios guardados" : "Cliente registrado");
+  } catch (e) { handleWriteError(e); }
+  finally { $("#btn-save").disabled = false; }
+});
+
+$("#btn-delete").addEventListener("click", async () => {
+  if (!editId || readOnly) return;
+  if (!confirmDelete) { confirmDelete = true; $("#btn-delete").textContent = "¿Seguro? Sí, eliminar"; return; }
+  try { await col.doc(editId).delete(); $("#dlg").close(); toast("Cliente eliminado"); }
+  catch (e) { handleWriteError(e); }
+});
+
+$("#btn-new").addEventListener("click", () => openForm(null));
+$("#btn-close").addEventListener("click", () => $("#dlg").close());
+$("#btn-cancel").addEventListener("click", () => $("#dlg").close());
+$("#list").addEventListener("click", (ev) => {
+  const id = ev.target.closest("[data-edit]")?.dataset.edit;
+  if (id) openForm(clientes.find(c => c.id === id));
+});
+["#q", "#f-color", "#f-canal"].forEach(s => $(s).addEventListener("input", render));
+
+$("#btn-export").addEventListener("click", async () => {
+  if (!downloads) return;
+  const cols = ["nombre", "celular", "email", "instagram", "ciudad", "cumple", "canal", "color", "productos", "notas", "creado"];
+  const cell = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const lines = [cols.join(",")].concat(clientes.map(c => cols.map(k =>
+    cell(k === "productos" ? (c.productos || []).join("; ") : k === "color" ? (COLORES[c.color]?.n || "") : c[k])).join(",")));
+  const hoy = new Date().toISOString().slice(0, 10);
+  try {
+    const r = await downloads.save({ filename: `clientes-megalucuma-${hoy}.csv`, data: "﻿" + lines.join("\r\n") });
+    if (r?.status === "saved") toast("CSV descargado");
+  } catch (e) {
+    if (e?.code === "unavailable") $("#btn-export").hidden = true;
+  }
+});
+
+async function start() {
+  if (!window.claude?.use) {
+    $("#btn-new").disabled = true;
+    notice("<strong>Sin conexión a la base de datos</strong>Abre esta app desde claude.ai con tu cuenta para ver y registrar clientes.");
+    return;
+  }
+  db = await window.claude.use("db");
+  window.claude.use("downloads").then(d => { downloads = d; render(); });
+  if (!db) {
+    $("#btn-new").disabled = true;
+    notice("<strong>Sin conexión a la base de datos</strong>Inicia sesión en claude.ai para ver y registrar clientes.");
+    return;
+  }
+  col = db.collection("clientes");
+  col.orderBy("creado", "desc").onSnapshot(
+    (snap) => { clientes = snap.docs.map(d => ({ id: d.id, ...d.data() })); render(); },
+    () => notice("<strong>Se perdió la conexión</strong>Recarga la página para volver a ver los clientes.")
+  );
+}
+start();
+</script>
