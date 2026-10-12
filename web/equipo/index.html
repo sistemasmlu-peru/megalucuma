@@ -81,6 +81,23 @@ form.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding:
 .banner-prev { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; background: var(--chip); display: block; }
 .check { display: flex; gap: 8px; align-items: center; font-weight: 700; }
 .check input { width: 18px; height: 18px; accent-color: var(--borgona); }
+.ped { grid-template-columns: 6px minmax(0, 1fr) minmax(0, 1.2fr) auto; }
+.ped .cod { font-family: ui-monospace, Menlo, Consolas, monospace; font-weight: 800; letter-spacing: .08em; }
+.ped .monto { font-family: var(--f-display); font-size: 1.3rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.ped select { width: auto; padding: 6px 10px; font-weight: 700; }
+.ped .items { font-size: .88rem; overflow-wrap: anywhere; }
+.estado-por_confirmar { background: #b7791f; } .estado-pagado { background: #3f7a3a; } .estado-enviado { background: var(--uva); }
+.estado-entregado { background: var(--olivo); } .estado-cancelado { background: var(--line); }
+.prod-row { display: grid; grid-template-columns: minmax(0, 1fr) 110px auto auto; gap: 8px; align-items: center; }
+.prod-row button { padding: 6px 12px; font-size: .82rem; }
+.prod-row label { font-size: .82rem; font-weight: 700; display: flex; gap: 6px; align-items: center; white-space: nowrap; }
+.prod-row label input { width: auto; }
+@media (max-width: 560px) { .prod-row { grid-template-columns: 1fr 1fr; } }
+.ajustes { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
+.ajustes summary { cursor: pointer; font-weight: 800; }
+.ajustes form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
+@media (max-width: 560px) { .ajustes form { grid-template-columns: 1fr; } }
+.comp-img { max-width: 100%; max-height: 70vh; display: block; margin: 0 auto; border-radius: 10px; }
 .readonly-box { grid-column: 1 / -1; font-size: .85rem; color: var(--muted); background: var(--chip); border-radius: 10px; padding: 10px 12px; }
 </style>
 </head>
@@ -116,6 +133,7 @@ form.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding:
   <section id="v-panel" hidden style="display:grid;gap:20px">
     <div class="tabs" role="tablist">
       <button type="button" role="tab" id="tab-registros" aria-selected="true">Registros</button>
+      <button type="button" role="tab" id="tab-pedidos" aria-selected="false">Pedidos <span id="badge-ped"></span></button>
       <button type="button" role="tab" id="tab-campanas" aria-selected="false">Campañas</button>
     </div>
 
@@ -142,6 +160,25 @@ form.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding:
       <div id="list" class="list"></div>
     </div>
 
+    <div id="p-pedidos" style="display:grid;gap:18px" hidden>
+      <section class="summary" aria-label="Resumen de pedidos" style="grid-template-columns:repeat(4,minmax(0,1fr))">
+        <div class="stat total"><span class="k">Por confirmar</span><span class="v" id="sp-pend">0</span></div>
+        <div class="stat"><span class="k">Pagados</span><span class="v" id="sp-pag">0</span></div>
+        <div class="stat"><span class="k">Enviados / entregados</span><span class="v" id="sp-env">0</span></div>
+        <div class="stat"><span class="k">Vendido (confirmado)</span><span class="v" id="sp-total">S/ 0</span></div>
+      </section>
+      <div class="toolbar">
+        <input id="pq" class="search" type="search" placeholder="Buscar por código, nombre o celular" aria-label="Buscar pedidos">
+        <select id="pf-estado" aria-label="Filtrar por estado">
+          <option value="">Todos los estados</option><option value="por_confirmar">Por confirmar</option><option value="pagado">Pagado</option>
+          <option value="enviado">Enviado</option><option value="entregado">Entregado</option><option value="cancelado">Cancelado</option>
+        </select>
+        <select id="pf-campana" aria-label="Filtrar por campaña"><option value="">Todas las campañas</option></select>
+        <button type="button" class="ghost" id="btn-export-ped">Exportar CSV</button>
+      </div>
+      <div id="ped-list" class="list"></div>
+    </div>
+
     <div id="p-campanas" style="display:grid;gap:18px" hidden>
       <div class="toolbar">
         <p class="count-line" style="flex:1">Cada campaña tiene su propio enlace con banner y detalles. Compártelo con tus clientes en Instagram o WhatsApp.</p>
@@ -149,6 +186,18 @@ form.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding:
       </div>
       <div class="notice"><strong>Enlace general</strong><span id="link-general" class="camp-link"></span> <button type="button" class="ghost" data-copy-general style="padding:4px 12px;font-size:.82rem">Copiar</button></div>
       <div id="camp-list" class="list"></div>
+      <details class="ajustes" id="ajustes-box">
+        <summary>Datos de pago y tienda (para todas las campañas)</summary>
+        <form id="f-ajustes" novalidate>
+          <div class="field"><label for="a-yape">Número de Yape</label><input id="a-yape" inputmode="tel" maxlength="20"></div>
+          <div class="field"><label for="a-plin">Número de Plin</label><input id="a-plin" inputmode="tel" maxlength="20"></div>
+          <div class="field"><label for="a-titular">Titular (como aparece al pagar)</label><input id="a-titular" maxlength="120"></div>
+          <div class="field"><label for="a-wa">WhatsApp para pedidos (con 51)</label><input id="a-wa" inputmode="tel" maxlength="20" placeholder="51991807370"></div>
+          <div class="field full"><label for="a-tienda">Link de la tienda web (por defecto)</label><input id="a-tienda" type="url" maxlength="500" placeholder="https://www.megalucuma.com/..."></div>
+          <p class="form-error field full" id="a-error" hidden></p>
+          <div class="field full" style="justify-items:end"><button type="submit" class="primary" id="a-guardar">Guardar datos</button></div>
+        </form>
+      </details>
     </div>
   </section>
 </main>
@@ -200,6 +249,12 @@ form.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding:
     <div class="field"><label for="k-boton">Texto del botón</label><input id="k-boton" maxlength="40" placeholder="Registrarme"></div>
     <div class="field"><label for="k-cierra">Cierra el</label><input id="k-cierra" type="date"></div>
     <div class="field full"><label for="k-gracias">Mensaje al terminar</label><input id="k-gracias" maxlength="500" placeholder="Ya eres parte de la comunidad Megalücuma…"></div>
+    <div class="field full"><label for="k-tienda">Link de compra en la web</label><input id="k-tienda" type="url" maxlength="500" placeholder="https://www.megalucuma.com/... (si lo dejas vacío usa el general)"></div>
+    <label class="check field full" for="k-venta"><input type="checkbox" id="k-venta"> Vender por Yape / Plin en esta campaña</label>
+    <div class="field full" id="k-prod-box"><span class="lbl">Productos y precios (S/)</span>
+      <div id="k-productos" style="display:grid;gap:8px"></div>
+      <div><button type="button" class="ghost" id="k-add-prod" style="padding:6px 14px;font-size:.85rem">+ Agregar producto</button></div>
+      <p class="hint">Marca “Elige color” si el cliente debe escoger Borgoña, Rosé, Olivo o Uva.</p></div>
     <label class="check field full" for="k-activa"><input type="checkbox" id="k-activa" checked> Campaña activa (visible en su enlace)</label>
     <p class="form-error field full" id="k-error" hidden></p>
     <div class="dlg-foot">
@@ -207,6 +262,11 @@ form.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding:
       <div class="right"><button type="button" class="ghost" data-close>Cancelar</button><button type="submit" class="primary" id="k-guardar">Guardar campaña</button></div>
     </div>
   </form>
+</dialog>
+
+<dialog id="dlg-comp" aria-labelledby="dp-title">
+  <div class="dlg-head"><h2 id="dp-title">Comprobante</h2><button type="button" data-close>Cerrar</button></div>
+  <div style="padding:18px 22px;display:grid;gap:12px" id="dp-body"></div>
 </dialog>
 
 <div id="toast" class="toast" role="status" hidden></div>
@@ -221,7 +281,7 @@ const CANALES = ["Instagram", "Página web", "WhatsApp", "Feria / evento", "Parr
 const PRODUCTOS = ["Agenda", "Journal", "Cuaderno", "Stickers", "Marcadores", "Otro"];
 const ORIGEN = location.origin;
 
-let clientes = [], campanas = [], editCliente = null, editCamp = null, bannerFile = null, confirmar = false;
+let pedidos = [], ajustes = {}, clientes = [], campanas = [], editCliente = null, editCamp = null, bannerFile = null, confirmar = false;
 
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const v = (id) => $("#" + id).value.trim() || null;
@@ -272,18 +332,23 @@ sb.auth.onAuthStateChange((evt) => { if (evt === "SIGNED_IN" && $("#v-panel").hi
 
 // ---------- Datos ----------
 async function cargarTodo() {
-  const [k, c] = await Promise.all([
+  const [k, c, p, a] = await Promise.all([
     sb.from("campanas").select("*").order("creado", { ascending: false }),
     sb.from("clientes").select("*").order("creado", { ascending: false }).limit(5000),
+    sb.from("pedidos").select("*").order("creado", { ascending: false }).limit(5000),
+    sb.from("ajustes").select("*").maybeSingle(),
   ]);
-  if (k.error || c.error) { notice("<strong>No se pudieron cargar los datos</strong>Revisa tu conexión y pulsa Actualizar."); return; }
-  campanas = k.data; clientes = c.data;
+  if (k.error || c.error || p.error) { notice("<strong>No se pudieron cargar los datos</strong>Revisa tu conexión y pulsa Actualizar."); return; }
+  campanas = k.data; clientes = c.data; pedidos = p.data; ajustes = a.data || {};
   const opts = campanas.map((x) => `<option value="${x.id}">${esc(x.titulo)}</option>`).join("");
   const fc = $("#f-campana").value;
   $("#f-campana").innerHTML = '<option value="">Todas las campañas</option><option value="ninguna">Sin campaña (enlace general)</option>' + opts;
   $("#f-campana").value = [...$("#f-campana").options].some((o) => o.value === fc) ? fc : "";
   $("#c-campana").innerHTML = '<option value="">Sin campaña</option>' + opts;
-  renderClientes(); renderCampanas();
+  const fp = $("#pf-campana").value;
+  $("#pf-campana").innerHTML = '<option value="">Todas las campañas</option>' + opts;
+  $("#pf-campana").value = [...$("#pf-campana").options].some((o) => o.value === fp) ? fp : "";
+  pintarAjustes(); renderClientes(); renderCampanas(); renderPedidos();
 }
 $("#btn-refrescar").addEventListener("click", async () => { await cargarTodo(); toast("Actualizado"); });
 document.addEventListener("visibilitychange", () => { if (!document.hidden && !$("#v-panel").hidden) cargarTodo(); });
@@ -291,9 +356,11 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden && !$
 // ---------- Pestañas ----------
 function tab(cual) {
   $("#tab-registros").setAttribute("aria-selected", cual === "r");
+  $("#tab-pedidos").setAttribute("aria-selected", cual === "p");
   $("#tab-campanas").setAttribute("aria-selected", cual === "k");
-  $("#p-registros").hidden = cual !== "r"; $("#p-campanas").hidden = cual !== "k";
+  $("#p-registros").hidden = cual !== "r"; $("#p-pedidos").hidden = cual !== "p"; $("#p-campanas").hidden = cual !== "k";
 }
+$("#tab-pedidos").addEventListener("click", () => tab("p"));
 $("#tab-registros").addEventListener("click", () => tab("r"));
 $("#tab-campanas").addEventListener("click", () => tab("k"));
 
@@ -327,6 +394,7 @@ function renderClientes() {
     const lineas = [c.email, c.ciudad].filter(Boolean).map(esc).join(" · ");
     const chips = [
       new Date(c.creado).getTime() > hace7 ? '<span class="chip new">Nuevo</span>' : "",
+      ...pedidos.filter((p) => p.cliente_id === c.id).map((p) => `<span class="chip">🛍 #${esc(p.codigo)}</span>`),
       c.campana_id && nombreCamp[c.campana_id] ? `<span class="chip">${esc(nombreCamp[c.campana_id])}</span>` : "",
       col ? `<span class="chip"><span class="dot" style="background:${col[1]};width:8px;height:8px"></span>${col[0]}</span>` : "",
       ...(c.productos || []).map((p) => `<span class="chip">${esc(p)}</span>`),
@@ -407,10 +475,11 @@ function renderCampanas() {
   el.innerHTML = campanas.map((k) => {
     const n = clientes.filter((c) => c.campana_id === k.id).length;
     const vencida = k.cierra && k.cierra < hoy;
+    const vende = k.venta_activa ? ' <span class="chip">Vende por Yape/Plin</span>' : "";
     const estado = !k.activa ? '<span class="estado off">Pausada</span>' : vencida ? '<span class="estado off">Cerrada</span>' : '<span class="estado on">● Activa</span>';
     return `<article class="card camp">
       ${k.banner_url ? `<img class="thumb" src="${esc(k.banner_url)}" alt="">` : `<div class="thumb" style="background:${COLORES[k.tema][1]}"></div>`}
-      <div style="min-width:0"><div class="name">${esc(k.titulo)}</div><div class="link">${esc(linkCamp(k))}</div><div>${estado}${k.cierra ? ` <span class="sub">· cierra el ${fecha(k.cierra)}</span>` : ""}</div></div>
+      <div style="min-width:0"><div class="name">${esc(k.titulo)}</div><div class="link">${esc(linkCamp(k))}</div><div>${estado}${vende}${k.cierra ? ` <span class="sub">· cierra el ${fecha(k.cierra)}</span>` : ""}</div></div>
       <div><div class="stat" style="border:none;padding:0;background:none"><span class="k">Registros</span><span class="v">${n}</span></div></div>
       <div class="actions">
         <button type="button" data-copy="${k.id}">Copiar enlace</button>
@@ -449,6 +518,9 @@ function abrirCamp(k) {
   $("#k-titulo").value = k?.titulo || ""; $("#k-slug").value = k?.slug || ""; $("#k-bajada").value = k?.bajada || "";
   $("#k-detalle").value = k?.detalle || ""; $("#k-boton").value = k?.boton || ""; $("#k-cierra").value = k?.cierra || "";
   $("#k-gracias").value = k?.mensaje_gracias || ""; $("#k-activa").checked = k ? k.activa : true;
+  $("#k-tienda").value = k?.link_tienda || ""; $("#k-venta").checked = !!k?.venta_activa;
+  $("#k-productos").innerHTML = ""; (k?.productos || []).forEach(filaProducto);
+  if (!k) filaProducto({ nombre: "", precio: "", con_color: true });
   document.querySelector(`#k-tema input[value="${k?.tema || "borgona"}"]`).checked = true;
   $("#k-banner").value = ""; $("#k-banner-prev").hidden = !k?.banner_url; if (k?.banner_url) $("#k-banner-prev").src = k.banner_url;
   $("#k-error").hidden = true; $("#k-borrar").hidden = !k; $("#k-borrar").textContent = "Eliminar campaña";
@@ -460,20 +532,23 @@ $("#f-camp").addEventListener("submit", async (ev) => {
   const titulo = v("k-titulo"), slug = $("#k-slug").value.replace(/-+$/, "");
   if (!titulo || titulo.length < 2) return fail("Escribe un título para la campaña.");
   if (!slug) return fail("Escribe el enlace de la campaña (solo letras, números y guiones).");
-  $("#k-guardar").disabled = true; err.hidden = true;
-  let banner_url = editCamp?.banner_url || null;
+  const fila = {
+    titulo, slug, bajada: v("k-bajada"), detalle: v("k-detalle"), boton: v("k-boton"), cierra: v("k-cierra"),
+    mensaje_gracias: v("k-gracias"), activa: $("#k-activa").checked, banner_url: editCamp?.banner_url || null,
+    tema: document.querySelector("#k-tema input:checked").value,
+    link_tienda: v("k-tienda"), venta_activa: $("#k-venta").checked, productos: leerProductos(),
+  };
+  if (fila.link_tienda && !/^https?:\/\//.test(fila.link_tienda)) return fail("El link de la tienda debe empezar con https://");
+  if (fila.productos === null) return fail("Revisa los productos: cada uno necesita nombre y un precio mayor a 0.");
+  if (fila.venta_activa && !fila.productos.length) return fail("Agrega al menos un producto con precio para vender por Yape / Plin.");
+  err.hidden = true; $("#k-guardar").disabled = true;
   if (bannerFile) {
     const ext = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" }[bannerFile.type] || "jpg";
     const path = `${slug}-${Date.now()}.${ext}`;
     const up = await sb.storage.from("banners").upload(path, bannerFile, { contentType: bannerFile.type, cacheControl: "31536000" });
     if (up.error) return fail("No se pudo subir el banner. Prueba con otra imagen.");
-    banner_url = sb.storage.from("banners").getPublicUrl(path).data.publicUrl;
+    fila.banner_url = sb.storage.from("banners").getPublicUrl(path).data.publicUrl;
   }
-  const fila = {
-    titulo, slug, bajada: v("k-bajada"), detalle: v("k-detalle"), boton: v("k-boton"), cierra: v("k-cierra"),
-    mensaje_gracias: v("k-gracias"), activa: $("#k-activa").checked, banner_url,
-    tema: document.querySelector("#k-tema input:checked").value,
-  };
   const { error } = editCamp ? await sb.from("campanas").update(fila).eq("id", editCamp.id) : await sb.from("campanas").insert(fila);
   if (error) return fail(error.code === "23505" ? "Ya existe una campaña con ese enlace. Cambia el enlace." : "No se pudo guardar la campaña. Revisa los datos.");
   $("#k-guardar").disabled = false; $("#dlg-camp").close();
@@ -484,6 +559,116 @@ $("#k-borrar").addEventListener("click", async () => {
   const { error } = await sb.from("campanas").delete().eq("id", editCamp.id);
   if (error) { $("#k-error").textContent = "No se pudo eliminar."; $("#k-error").hidden = false; return; }
   $("#dlg-camp").close(); toast("Campaña eliminada"); cargarTodo();
+});
+
+// ---------- Productos de la campaña ----------
+function filaProducto(p) {
+  const d = document.createElement("div"); d.className = "prod-row";
+  d.innerHTML = `<input class="pr-n" maxlength="80" placeholder="Ej. Agenda 2027" aria-label="Producto">
+    <input class="pr-p" type="number" min="0" step="0.5" inputmode="decimal" placeholder="Precio" aria-label="Precio en soles">
+    <label><input type="checkbox" class="pr-c"> Elige color</label>
+    <button type="button" class="ghost" data-quitar>Quitar</button>`;
+  d.querySelector(".pr-n").value = p.nombre || ""; d.querySelector(".pr-p").value = p.precio ?? ""; d.querySelector(".pr-c").checked = !!p.con_color;
+  $("#k-productos").appendChild(d);
+}
+$("#k-add-prod").addEventListener("click", () => filaProducto({ con_color: true }));
+$("#k-productos").addEventListener("click", (e) => { if (e.target.closest("[data-quitar]")) e.target.closest(".prod-row").remove(); });
+function leerProductos() {
+  const out = [];
+  for (const r of document.querySelectorAll("#k-productos .prod-row")) {
+    const nombre = r.querySelector(".pr-n").value.trim(), precio = r.querySelector(".pr-p").value;
+    if (!nombre && !precio) continue;
+    if (!nombre || !(Number(precio) > 0)) return null;
+    out.push({ nombre, precio: Math.round(Number(precio) * 100) / 100, con_color: r.querySelector(".pr-c").checked });
+  }
+  return out;
+}
+
+// ---------- Ajustes de pago ----------
+function pintarAjustes() {
+  if (document.activeElement?.closest("#f-ajustes")) return;
+  $("#a-yape").value = ajustes.yape_numero || ""; $("#a-plin").value = ajustes.plin_numero || "";
+  $("#a-titular").value = ajustes.titular || ""; $("#a-wa").value = ajustes.whatsapp || ""; $("#a-tienda").value = ajustes.link_tienda || "";
+}
+$("#f-ajustes").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const fila = { yape_numero: v("a-yape"), plin_numero: v("a-plin"), titular: v("a-titular"), whatsapp: (v("a-wa") || "").replace(/\D/g, "") || null, link_tienda: v("a-tienda") };
+  const err = $("#a-error");
+  if (fila.link_tienda && !/^https?:\/\//.test(fila.link_tienda)) { err.textContent = "El link de la tienda debe empezar con https://"; err.hidden = false; return; }
+  if (fila.whatsapp && !fila.whatsapp.startsWith("51")) fila.whatsapp = "51" + fila.whatsapp;
+  err.hidden = true; $("#a-guardar").disabled = true;
+  const { error } = await sb.from("ajustes").update(fila).eq("id", 1);
+  $("#a-guardar").disabled = false;
+  if (error) { err.textContent = "No se pudieron guardar los datos."; err.hidden = false; return; }
+  toast("Datos de pago guardados"); cargarTodo();
+});
+
+// ---------- Pedidos ----------
+const ESTADOS = { por_confirmar: "Por confirmar", pagado: "Pagado", enviado: "Enviado", entregado: "Entregado", cancelado: "Cancelado" };
+const soles = (n) => "S/ " + Number(n).toLocaleString("es-PE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const lineaTxt = (l) => `${l.cantidad} × ${l.producto}${l.color ? " " + COLORES[l.color][0] : ""}`;
+function pedidosFiltrados() {
+  const q = $("#pq").value.trim().toLowerCase(), fe = $("#pf-estado").value, fk = $("#pf-campana").value;
+  const cli = Object.fromEntries(clientes.map((c) => [c.id, c]));
+  return pedidos.filter((p) => (!fe || p.estado === fe) && (!fk || p.campana_id === fk) &&
+    (!q || [p.codigo, cli[p.cliente_id]?.nombre, cli[p.cliente_id]?.celular].some((x) => String(x || "").toLowerCase().includes(q))));
+}
+function renderPedidos() {
+  const pend = pedidos.filter((p) => p.estado === "por_confirmar").length;
+  $("#badge-ped").textContent = pend ? `(${pend})` : "";
+  $("#sp-pend").textContent = pend;
+  $("#sp-pag").textContent = pedidos.filter((p) => p.estado === "pagado").length;
+  $("#sp-env").textContent = pedidos.filter((p) => ["enviado", "entregado"].includes(p.estado)).length;
+  $("#sp-total").textContent = soles(pedidos.filter((p) => ["pagado", "enviado", "entregado"].includes(p.estado)).reduce((s, p) => s + Number(p.total), 0));
+  const el = $("#ped-list"), rows = pedidosFiltrados();
+  if (!pedidos.length) { el.innerHTML = `<div class="empty"><h2>Aún no hay pedidos</h2><p>Activa “Vender por Yape / Plin” en una campaña y agrega sus productos. Cada pedido llegará aquí con la captura del pago para que lo confirmes.</p></div>`; return; }
+  if (!rows.length) { el.innerHTML = `<div class="empty"><h2>Ningún pedido coincide</h2><p>Prueba con otra búsqueda o quita los filtros.</p></div>`; return; }
+  const cli = Object.fromEntries(clientes.map((c) => [c.id, c])), camp = Object.fromEntries(campanas.map((k) => [k.id, k.titulo]));
+  el.innerHTML = rows.map((p) => {
+    const c = cli[p.cliente_id] || {};
+    const tel = (c.celular || "").replace(/\D/g, ""), wa = tel ? `https://wa.me/${tel.length === 9 ? "51" + tel : tel}` : "";
+    return `<article class="card ped">
+      <span class="stripe estado-${p.estado}"></span>
+      <div style="min-width:0"><div class="cod">#${esc(p.codigo)}</div><div class="name">${esc(c.nombre || "Cliente eliminado")}</div>
+        <div class="sub">${esc(c.celular || "")}${wa ? ` · <a href="${wa}" target="_blank" rel="noopener">WhatsApp</a>` : ""}</div>
+        <div class="sub">${fecha(p.creado, { day: "numeric", month: "short" })} · ${p.metodo === "plin" ? "Plin" : "Yape"}${camp[p.campana_id] ? " · " + esc(camp[p.campana_id]) : ""}</div></div>
+      <div style="min-width:0"><div class="items">${(p.items || []).map((l) => esc(lineaTxt(l))).join("<br>")}</div><div class="monto">${soles(p.total)}</div></div>
+      <div class="actions" style="flex-direction:column;align-items:stretch">
+        <select data-estado="${p.id}" aria-label="Estado del pedido ${esc(p.codigo)}">${Object.entries(ESTADOS).map(([k, n]) => `<option value="${k}" ${k === p.estado ? "selected" : ""}>${n}</option>`).join("")}</select>
+        <button type="button" data-comp="${p.id}">Ver comprobante</button>
+      </div>
+    </article>`;
+  }).join("");
+}
+["#pq", "#pf-estado", "#pf-campana"].forEach((s) => $(s).addEventListener("input", renderPedidos));
+$("#ped-list").addEventListener("change", async (e) => {
+  const id = e.target.dataset.estado; if (!id) return;
+  const { error } = await sb.from("pedidos").update({ estado: e.target.value }).eq("id", id);
+  if (error) { toast("No se pudo cambiar el estado"); return; }
+  pedidos.find((p) => p.id === id).estado = e.target.value; renderPedidos(); toast("Estado: " + ESTADOS[e.target.value]);
+});
+$("#ped-list").addEventListener("click", async (e) => {
+  const id = e.target.closest("[data-comp]")?.dataset.comp; if (!id) return;
+  const p = pedidos.find((x) => x.id === id);
+  $("#dp-title").textContent = `Comprobante #${p.codigo} · ${soles(p.total)}`;
+  $("#dp-body").innerHTML = '<p class="hint">Cargando…</p>'; $("#dlg-comp").showModal();
+  const { data, error } = await sb.storage.from("comprobantes").createSignedUrl(p.comprobante, 600);
+  if (error) { $("#dp-body").innerHTML = '<p class="form-error">No se pudo abrir el comprobante.</p>'; return; }
+  $("#dp-body").innerHTML = /\.pdf$/i.test(p.comprobante)
+    ? `<a class="btnlink" style="padding:10px 18px" href="${data.signedUrl}" target="_blank" rel="noopener">Abrir PDF ↗</a>`
+    : `<img class="comp-img" src="${data.signedUrl}" alt="Captura del pago"><a class="hint" href="${data.signedUrl}" target="_blank" rel="noopener">Abrir en tamaño completo ↗</a>`;
+});
+$("#btn-export-ped").addEventListener("click", () => {
+  const cli = Object.fromEntries(clientes.map((c) => [c.id, c])), camp = Object.fromEntries(campanas.map((k) => [k.id, k.titulo]));
+  const cols = [["Fecha", (p) => p.creado.slice(0, 10)], ["Código", (p) => p.codigo], ["Cliente", (p) => cli[p.cliente_id]?.nombre], ["Celular", (p) => cli[p.cliente_id]?.celular],
+    ["Productos", (p) => (p.items || []).map(lineaTxt).join("; ")], ["Total", (p) => Number(p.total).toFixed(2)], ["Método", (p) => p.metodo],
+    ["Estado", (p) => ESTADOS[p.estado]], ["Campaña", (p) => camp[p.campana_id]]];
+  const cell = (x) => `"${String(x ?? "").replace(/"/g, '""')}"`;
+  const csv = "﻿" + [cols.map((c) => cell(c[0])).join(",")].concat(pedidosFiltrados().map((r) => cols.map((c) => cell(c[1](r))).join(","))).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  a.download = `pedidos-megalucuma-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 });
 
 document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => b.closest("dialog").close()));
