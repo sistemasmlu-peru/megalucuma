@@ -192,6 +192,7 @@ form.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding:
           <div class="field"><label for="a-plin">Número de Plin</label><input id="a-plin" inputmode="tel" maxlength="20"></div>
           <div class="field"><label for="a-titular">Titular (como aparece al pagar)</label><input id="a-titular" maxlength="120"></div>
           <div class="field"><label for="a-wa">WhatsApp para pedidos (con 51)</label><input id="a-wa" inputmode="tel" maxlength="20" placeholder="51991807370"></div>
+          <div class="field"><label for="a-envio">Costo de envío (S/)</label><input id="a-envio" type="number" min="0" step="0.5" inputmode="decimal"></div>
           <div class="field full"><label for="a-tienda">Link de la tienda web (por defecto)</label><input id="a-tienda" type="url" maxlength="500" placeholder="https://www.megalucuma.com/..."></div>
           <p class="form-error field full" id="a-error" hidden></p>
           <div class="field full" style="justify-items:end"><button type="submit" class="primary" id="a-guardar">Guardar datos</button></div>
@@ -212,7 +213,7 @@ form.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding:
     <div class="field full"><label for="c-direccion">Dirección de envío</label><input id="c-direccion" maxlength="250"></div>
     <div class="field full"><label for="c-referencia">Referencia</label><input id="c-referencia" maxlength="250"></div>
     <div class="field"><label for="c-distrito">Distrito</label><input id="c-distrito" maxlength="80"></div>
-    <div class="field"><label for="c-provincia">Provincia o departamento</label><input id="c-provincia" maxlength="80"></div>
+    <div class="field"><label for="c-provincia">Provincia y departamento</label><input id="c-provincia" maxlength="80"></div>
     <div class="field"><label for="c-cumple">Cumpleaños</label><input id="c-cumple" type="date"></div>
     <div class="field"><label for="c-canal">¿Cómo nos conoció?</label><select id="c-canal"></select></div>
     <div class="field full"><label for="c-campana">Campaña</label><select id="c-campana"></select></div>
@@ -594,11 +595,11 @@ function leerProductos() {
 function pintarAjustes() {
   if (document.activeElement?.closest("#f-ajustes")) return;
   $("#a-yape").value = ajustes.yape_numero || ""; $("#a-plin").value = ajustes.plin_numero || "";
-  $("#a-titular").value = ajustes.titular || ""; $("#a-wa").value = ajustes.whatsapp || ""; $("#a-tienda").value = ajustes.link_tienda || "";
+  $("#a-titular").value = ajustes.titular || ""; $("#a-wa").value = ajustes.whatsapp || ""; $("#a-tienda").value = ajustes.link_tienda || ""; $("#a-envio").value = ajustes.costo_envio ?? 10;
 }
 $("#f-ajustes").addEventListener("submit", async (ev) => {
   ev.preventDefault();
-  const fila = { yape_numero: v("a-yape"), plin_numero: v("a-plin"), titular: v("a-titular"), whatsapp: (v("a-wa") || "").replace(/\D/g, "") || null, link_tienda: v("a-tienda") };
+  const fila = { yape_numero: v("a-yape"), plin_numero: v("a-plin"), titular: v("a-titular"), whatsapp: (v("a-wa") || "").replace(/\D/g, "") || null, link_tienda: v("a-tienda"), costo_envio: Number($("#a-envio").value) >= 0 && $("#a-envio").value !== "" ? Number($("#a-envio").value) : 10 };
   const err = $("#a-error");
   if (fila.link_tienda && !/^https?:\/\//.test(fila.link_tienda)) { err.textContent = "El link de la tienda debe empezar con https://"; err.hidden = false; return; }
   if (fila.whatsapp && !fila.whatsapp.startsWith("51")) fila.whatsapp = "51" + fila.whatsapp;
@@ -638,13 +639,14 @@ function renderPedidos() {
       <div style="min-width:0"><div class="cod">#${esc(p.codigo)}</div><div class="name">${esc(c.nombre || "Cliente eliminado")}</div>
         <div class="sub">${esc(c.celular || "")}${wa ? ` · <a href="${wa}" target="_blank" rel="noopener">WhatsApp</a>` : ""}</div>
         <div class="sub">${fecha(p.creado, { day: "numeric", month: "short" })} · ${p.metodo === "plin" ? "Plin" : "Yape"}${camp[p.campana_id] ? " · " + esc(camp[p.campana_id]) : ""}</div></div>
-      <div style="min-width:0"><div class="items">${(p.items || []).map((l) => esc(lineaTxt(l))).join("<br>")}</div><div class="monto">${soles(p.total)}</div>
+      <div style="min-width:0"><div class="items">${(p.items || []).map((l) => esc(lineaTxt(l))).join("<br>")}</div><div class="monto">${soles(p.total)}</div>${Number(p.envio) ? `<div class="sub">Incluye envío ${soles(p.envio)}</div>` : ""}
         <div class="sub">📦 ${esc([c.direccion, c.distrito, c.provincia].filter(Boolean).join(", ") || "Sin dirección")}${c.referencia ? " · Ref: " + esc(c.referencia) : ""}${c.dni ? " · DNI " + esc(c.dni) : ""}</div>
         ${p.es_regalo ? `<div class="sub">🎁 <strong>Regalo</strong>${p.regalo_para ? ": " + esc(p.regalo_para) : ""}</div>` : ""}
         ${p.comentario ? `<div class="sub">💬 ${esc(p.comentario)}</div>` : ""}</div>
       <div class="actions" style="flex-direction:column;align-items:stretch">
         <select data-estado="${p.id}" aria-label="Estado del pedido ${esc(p.codigo)}">${Object.entries(ESTADOS).map(([k, n]) => `<option value="${k}" ${k === p.estado ? "selected" : ""}>${n}</option>`).join("")}</select>
         <button type="button" data-comp="${p.id}">Ver comprobante</button>
+        <button type="button" class="danger" data-borrar-ped="${p.id}">Eliminar</button>
       </div>
     </article>`;
   }).join("");
@@ -656,7 +658,20 @@ $("#ped-list").addEventListener("change", async (e) => {
   if (error) { toast("No se pudo cambiar el estado"); return; }
   pedidos.find((p) => p.id === id).estado = e.target.value; renderPedidos(); toast("Estado: " + ESTADOS[e.target.value]);
 });
+let borrarPend = null;
 $("#ped-list").addEventListener("click", async (e) => {
+  const bid = e.target.closest("[data-borrar-ped]")?.dataset.borrarPed;
+  if (bid) {
+    const btn = e.target.closest("[data-borrar-ped]");
+    if (borrarPend !== bid) { borrarPend = bid; btn.textContent = "¿Seguro? Sí, eliminar"; return; }
+    borrarPend = null; btn.disabled = true;
+    const p = pedidos.find((x) => x.id === bid);
+    const { error } = await sb.from("pedidos").delete().eq("id", bid);
+    if (error) { btn.disabled = false; btn.textContent = "Eliminar"; toast("No se pudo eliminar el pedido"); return; }
+    if (p?.comprobante) await sb.storage.from("comprobantes").remove([p.comprobante]);
+    pedidos = pedidos.filter((x) => x.id !== bid); renderPedidos(); renderClientes(); toast(`Pedido #${p?.codigo || ""} eliminado`);
+    return;
+  }
   const id = e.target.closest("[data-comp]")?.dataset.comp; if (!id) return;
   const p = pedidos.find((x) => x.id === id);
   $("#dp-title").textContent = `Comprobante #${p.codigo} · ${soles(p.total)}`;
@@ -672,7 +687,7 @@ $("#btn-export-ped").addEventListener("click", () => {
   const cols = [["Fecha", (p) => p.creado.slice(0, 10)], ["Código", (p) => p.codigo], ["Cliente", (p) => cli[p.cliente_id]?.nombre], ["Celular", (p) => cli[p.cliente_id]?.celular],
     ["DNI", (p) => cli[p.cliente_id]?.dni], ["Dirección", (p) => cli[p.cliente_id]?.direccion], ["Referencia", (p) => cli[p.cliente_id]?.referencia],
     ["Distrito", (p) => cli[p.cliente_id]?.distrito], ["Provincia", (p) => cli[p.cliente_id]?.provincia],
-    ["Productos", (p) => (p.items || []).map(lineaTxt).join("; ")], ["Total", (p) => Number(p.total).toFixed(2)], ["Método", (p) => p.metodo],
+    ["Productos", (p) => (p.items || []).map(lineaTxt).join("; ")], ["Envío", (p) => Number(p.envio || 0).toFixed(2)], ["Total", (p) => Number(p.total).toFixed(2)], ["Método", (p) => p.metodo],
     ["Regalo", (p) => (p.es_regalo ? "Sí" + (p.regalo_para ? ": " + p.regalo_para : "") : "No")], ["Comentario", (p) => p.comentario],
     ["Estado", (p) => ESTADOS[p.estado]], ["Campaña", (p) => camp[p.campana_id]]];
   const cell = (x) => `"${String(x ?? "").replace(/"/g, '""')}"`;
