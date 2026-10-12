@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Comunidad Megalücuma</title>
+<meta name="description" content="Únete a la comunidad Megalücuma: papelería católica con misión.">
+<meta name="theme-color" content="#4c1825">
+<link rel="icon" href="/assets/logo-blanco.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Nunito:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="/assets/estilos.css">
+<style>
+.hero { padding-block: 28px 96px; }
+.hero h1 { font-size: clamp(1.9rem, 5vw, 2.8rem); line-height: 1.1; max-width: 16ch; margin-top: 18px; }
+.hero h1 em { color: #e6c08a; font-style: italic; }
+.hero p.lead { font-size: 1.05rem; max-width: 46ch; margin-top: 12px; color: #f1dcd6; }
+.layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 28px; margin-top: -64px; padding-bottom: 48px; align-items: start; }
+.aside { display: grid; gap: 14px; }
+.aside img { border-radius: var(--radius); display: block; width: 100%; aspect-ratio: 4 / 5; object-fit: cover; box-shadow: 0 10px 30px rgba(40, 10, 20, .18); }
+.brand.t-rose { background-color: #8f5f56; }
+.brand.t-olivo { background-color: var(--olivo); }
+.brand.t-uva { background-color: var(--uva); }
+.eyebrow { margin: 18px 0 0 !important; text-transform: uppercase; letter-spacing: .14em; font-size: .78rem !important; font-weight: 800; color: #e6c08a !important; }
+.eyebrow + h1 { margin-top: 6px; }
+.detalle { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; white-space: pre-line; overflow-wrap: anywhere; }
+.cierra { margin: 0; font-weight: 800; color: var(--muted); font-size: .9rem; }
+.aside blockquote { margin: 0; font-family: var(--f-display); font-style: italic; font-size: 1.15rem; color: var(--muted); text-wrap: balance; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px; box-shadow: 0 10px 30px rgba(40, 10, 20, .08); }
+.card h2 { font-family: var(--f-display); font-weight: 500; margin: 0 0 4px; font-size: 1.45rem; }
+.card .sub { margin: 0 0 18px; color: var(--muted); }
+form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.swatch-big label { padding: 8px 14px 8px 10px; }
+.swatch-big .dot { width: 18px; height: 18px; }
+.consent { display: flex; gap: 10px; align-items: flex-start; font-size: .9rem; color: var(--muted); }
+.consent input { width: 18px; height: 18px; margin-top: 3px; flex: none; accent-color: var(--borgona); }
+.hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.submit-row { grid-column: 1 / -1; display: flex; justify-content: flex-end; }
+.submit-row button { padding: 12px 28px; font-size: 1rem; }
+.thanks { text-align: center; padding-block: 24px; display: grid; gap: 10px; justify-items: center; }
+.thanks h2 { font-size: 1.8rem; }
+.thanks p { max-width: 40ch; margin: 0; color: var(--muted); }
+footer { text-align: center; color: var(--muted); font-size: .85rem; padding-block: 0 32px; }
+footer a { color: inherit; }
+@media (max-width: 820px) {
+  .layout { grid-template-columns: 1fr; }
+  .aside { order: 2; }
+  .aside img { aspect-ratio: 16 / 10; }
+}
+@media (max-width: 520px) { form { grid-template-columns: 1fr; } .card { padding: 18px; } }
+</style>
+</head>
+<body>
+<header class="brand" id="hero-band">
+  <div class="wrap hero">
+    <img class="logo" src="/assets/logo-blanco.png" alt="Megalücuma">
+    <p class="eyebrow" id="eyebrow" hidden>Campaña</p>
+    <h1 id="titulo">Únete a la comunidad <em>Megalücuma</em></h1>
+    <p class="lead" id="bajada">Déjanos tus datos para enterarte primero de nuevas agendas, journals y sorpresas. Papelería con misión, para vivir la fe en lo cotidiano.</p>
+  </div>
+</header>
+
+<main class="wrap layout">
+  <aside class="aside">
+    <img id="banner" src="/assets/agendas.jpg" alt="Agendas Megalücuma en Olivo, Borgoña, Rosé y Uva">
+    <div id="detalle" class="detalle" hidden></div>
+    <p class="cierra" id="cierra" hidden></p>
+    <blockquote id="cita">Que mirar al cielo sea tan cotidiano como escribir tu lista de pendientes.</blockquote>
+    <div class="notice" id="cerrada" hidden><strong>Esta campaña ya cerró</strong>Igual puedes dejarnos tus datos para enterarte de las próximas.</div>
+  </aside>
+
+  <section class="card" id="card">
+    <div id="form-view">
+      <h2>Tus datos</h2>
+      <p class="sub">Solo te toma un minuto. Los campos con <span class="req">*</span> son obligatorios.</p>
+      <form id="form" novalidate>
+        <div class="field full"><label for="nombre">Nombre y apellido <span class="req">*</span></label><input id="nombre" name="nombre" autocomplete="name" required maxlength="120"></div>
+        <div class="field"><label for="celular">Celular / WhatsApp <span class="req">*</span></label><input id="celular" name="celular" type="tel" inputmode="tel" autocomplete="tel" placeholder="9xx xxx xxx" maxlength="30"></div>
+        <div class="field"><label for="email">Correo</label><input id="email" name="email" type="email" autocomplete="email" maxlength="160"></div>
+        <div class="field"><label for="instagram">Instagram</label><input id="instagram" name="instagram" placeholder="@usuario" maxlength="60" autocapitalize="off"></div>
+        <div class="field"><label for="ciudad">Ciudad / distrito</label><input id="ciudad" name="ciudad" placeholder="Ej. Miraflores, Lima" maxlength="120"></div>
+        <div class="field"><label for="cumple">Tu cumpleaños</label><input id="cumple" name="cumple" type="date"></div>
+        <div class="field"><label for="canal">¿Cómo nos conociste?</label>
+          <select id="canal" name="canal">
+            <option value="">Elige una opción</option>
+            <option>Instagram</option><option>Página web</option><option>WhatsApp</option>
+            <option>Feria / evento</option><option>Parroquia / grupo</option><option>Recomendación</option><option>Otro</option>
+          </select></div>
+        <div class="field full"><span class="lbl">¿Cuál es tu color de agenda favorito?</span>
+          <div class="pills swatch-big" role="radiogroup" aria-label="Color favorito">
+            <label><input type="radio" name="color" value="borgona"><span class="dot" style="background:var(--borgona)"></span>Borgoña</label>
+            <label><input type="radio" name="color" value="rose"><span class="dot" style="background:var(--rose)"></span>Rosé</label>
+            <label><input type="radio" name="color" value="olivo"><span class="dot" style="background:var(--olivo)"></span>Olivo</label>
+            <label><input type="radio" name="color" value="uva"><span class="dot" style="background:var(--uva)"></span>Uva</label>
+          </div></div>
+        <div class="hp" aria-hidden="true"><label for="web">No llenar</label><input id="web" name="web" tabindex="-1" autocomplete="off"></div>
+        <label class="consent field full" for="novedades"><input type="checkbox" id="novedades"> Quiero recibir novedades y promociones de Megalücuma por WhatsApp o correo.</label>
+        <label class="consent field full" for="datos"><input type="checkbox" id="datos"> <span>Autorizo a Megalücuma a usar mis datos para contactarme sobre sus productos, conforme a la Ley N.° 29733 de Protección de Datos Personales. Puedo pedir que los eliminen cuando quiera. <span class="req">*</span></span></label>
+        <p class="form-error field full" id="error" hidden></p>
+        <div class="submit-row"><button type="submit" class="primary" id="enviar">Registrarme</button></div>
+      </form>
+    </div>
+    <div id="thanks-view" class="thanks" hidden>
+      <img class="logo" src="/assets/logo-blanco.png" alt="" style="height:60px;background:var(--borgona);padding:12px 16px;border-radius:14px">
+      <h2 id="thanks-title">¡Gracias!</h2>
+      <p id="thanks-msg">Ya eres parte de la comunidad Megalücuma. Pronto te escribiremos con novedades.</p>
+      <p><a href="https://www.instagram.com/megalucuma/" target="_blank" rel="noopener">Síguenos en Instagram</a> · <a href="https://www.megalucuma.com/" target="_blank" rel="noopener">megalucuma.com</a></p>
+    </div>
+  </section>
+</main>
+<footer>Megalücuma · Papelería con misión · Perú</footer>
+
+<script src="/assets/config.js"></script>
+<script src="/assets/supabase.js"></script>
+<script>
+const $ = (s) => document.querySelector(s);
+const sb = supabase.createClient(MLU_CONFIG.url, MLU_CONFIG.key, { auth: { persistSession: false } });
+const val = (id) => $("#" + id).value.trim() || null;
+let campana = null;
+
+// La campaña llega como /c/<slug> (ver vercel.json) o ?c=<slug>
+function slugActual() {
+  const m = location.pathname.match(/^\/c\/([a-z0-9-]+)\/?$/);
+  return m ? m[1] : new URLSearchParams(location.search).get("c");
+}
+
+async function cargarCampana() {
+  const slug = slugActual();
+  if (!slug) return;
+  const { data } = await sb.from("campanas").select("*").eq("slug", slug).maybeSingle();
+  if (!data) { $("#cerrada").hidden = false; return; }
+  campana = data;
+  document.title = `${data.titulo} · Megalücuma`;
+  $("#hero-band").classList.add("t-" + data.tema);
+  $("#eyebrow").hidden = false;
+  $("#titulo").textContent = data.titulo;
+  $("#bajada").textContent = data.bajada || "";
+  $("#bajada").hidden = !data.bajada;
+  if (data.banner_url) { $("#banner").src = data.banner_url; $("#banner").alt = data.titulo; }
+  if (data.detalle) { $("#detalle").textContent = data.detalle; $("#detalle").hidden = false; $("#cita").hidden = true; }
+  if (data.cierra) {
+    const [y, m, d] = data.cierra.split("-").map(Number);
+    $("#cierra").textContent = "Disponible hasta el " + new Date(y, m - 1, d).toLocaleDateString("es-PE", { day: "numeric", month: "long" });
+    $("#cierra").hidden = false;
+  }
+  if (data.boton) $("#enviar").textContent = data.boton;
+}
+cargarCampana();
+
+function showError(msg) { const e = $("#error"); e.textContent = msg; e.hidden = !msg; }
+
+$("#form").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  showError("");
+  if ($("#web").value) return; // trampa para bots
+  const nombre = val("nombre"), celular = val("celular");
+  if (!nombre || nombre.length < 2) { showError("Escribe tu nombre y apellido."); $("#nombre").focus(); return; }
+  if (!celular || celular.replace(/\D/g, "").length < 6) { showError("Escribe un número de celular válido."); $("#celular").focus(); return; }
+  const email = val("email");
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError("Revisa tu correo, parece que tiene un error."); $("#email").focus(); return; }
+  if (!$("#datos").checked) { showError("Para registrarte, marca la autorización de uso de datos."); $("#datos").focus(); return; }
+
+  let instagram = val("instagram");
+  if (instagram && !instagram.startsWith("@")) instagram = "@" + instagram;
+  const fila = {
+    nombre, celular, email, instagram,
+    ciudad: val("ciudad"), cumple: val("cumple"), canal: val("canal"),
+    color: document.querySelector('input[name="color"]:checked')?.value || null,
+    acepta_novedades: $("#novedades").checked, acepta_datos: true,
+    campana_id: campana?.id || null,
+  };
+  const btn = $("#enviar"), texto = btn.textContent; btn.disabled = true; btn.textContent = "Enviando…";
+  const { error } = await sb.from("clientes").insert(fila);
+  btn.disabled = false; btn.textContent = texto;
+  if (error) { showError("No pudimos guardar tus datos. Revisa tu conexión e inténtalo de nuevo."); return; }
+  $("#thanks-title").textContent = `¡Gracias, ${nombre.split(" ")[0]}!`;
+  if (campana?.mensaje_gracias) $("#thanks-msg").textContent = campana.mensaje_gracias;
+  $("#form-view").hidden = true; $("#thanks-view").hidden = false;
+  $("#card").scrollIntoView({ behavior: "smooth", block: "start" });
+});
+</script>
+</body>
+</html>

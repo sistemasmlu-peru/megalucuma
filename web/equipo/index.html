@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Panel Megalücuma</title>
+<meta name="theme-color" content="#4c1825">
+<link rel="icon" href="/assets/logo-blanco.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Nunito:wght@400;600;700;800&display=swap">
+<link rel="stylesheet" href="/assets/estilos.css">
+<style>
+.brand-row .grow { flex: 1; min-width: 0; }
+.brand-row .who { display: flex; gap: 10px; align-items: center; font-size: .85rem; color: #ead3cd; flex-wrap: wrap; }
+.brand-row .who button { background: transparent; color: #fff; border-color: rgba(255,255,255,.45); padding: 5px 14px; font-size: .85rem; }
+main.wrap { display: grid; gap: 20px; padding-block: 22px 48px; }
+
+.login { max-width: 420px; margin: 40px auto; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 26px; display: grid; gap: 14px; }
+.login h2 { font-family: var(--f-display); font-weight: 500; margin: 0; font-size: 1.4rem; }
+.login p { margin: 0; color: var(--muted); }
+
+.tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); }
+.tabs button { border: none; border-radius: 0; background: transparent; padding: 10px 14px; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+
+.summary { display: grid; grid-template-columns: 1.2fr repeat(4, 1fr); gap: 10px; }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 2px; min-width: 0; }
+.stat .k { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 800; display: flex; align-items: center; gap: 6px; }
+.stat .v { font-family: var(--f-display); font-size: 1.7rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.stat.total { background: var(--chip); border-color: transparent; }
+@media (max-width: 720px) { .summary { grid-template-columns: repeat(2, 1fr); } .stat.total { grid-column: 1 / -1; } }
+
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.toolbar .search { flex: 1 1 220px; min-width: 0; }
+.toolbar select { width: auto; max-width: 100%; }
+.count-line { color: var(--muted); font-size: .88rem; margin: 0; }
+
+.list { display: grid; gap: 10px; }
+.card {
+  display: grid; grid-template-columns: 6px minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.2fr) auto; gap: 14px; align-items: center;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px 12px 0; overflow: hidden;
+}
+.card .stripe { align-self: stretch; margin-block: -12px; }
+.card .name { font-weight: 800; font-size: 1.02rem; overflow-wrap: anywhere; }
+.card .sub { color: var(--muted); font-size: .86rem; overflow-wrap: anywhere; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--chip); border-radius: 999px; padding: 2px 10px; font-size: .78rem; font-weight: 700; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+.chip.new { background: var(--accent); color: var(--accent-ink); }
+.card .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.card .actions button, .card .actions a { padding: 6px 14px; font-size: .85rem; }
+@media (max-width: 760px) {
+  .card { grid-template-columns: 6px minmax(0, 1fr); padding-right: 14px; }
+  .card > :not(.stripe) { grid-column: 2; }
+  .card .stripe { grid-row: 1 / span 4; }
+}
+.empty { text-align: center; padding: 40px 16px; background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius); display: grid; gap: 10px; justify-items: center; }
+.empty h2 { font-family: var(--f-display); font-weight: 500; margin: 0; font-size: 1.35rem; }
+.empty p { margin: 0; color: var(--muted); max-width: 48ch; }
+
+.camp { grid-template-columns: 120px minmax(0, 1.5fr) minmax(0, 1fr) auto; padding: 12px 14px; }
+.camp .thumb { width: 120px; aspect-ratio: 4 / 3; border-radius: 10px; object-fit: cover; background: var(--chip); display: block; }
+.camp .link { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .8rem; color: var(--muted); overflow-wrap: anywhere; }
+.btnlink { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); text-decoration: none; font-weight: 700; }
+.estado { font-weight: 800; font-size: .8rem; }
+.estado.on { color: #3f7a3a; } .estado.off { color: var(--muted); }
+@media (prefers-color-scheme: dark) { .estado.on { color: #9fd18f; } }
+@media (max-width: 760px) { .camp { grid-template-columns: 1fr; } .camp .thumb { width: 100%; aspect-ratio: 16 / 9; } }
+
+dialog { border: none; border-radius: 18px; padding: 0; width: min(680px, calc(100vw - 32px)); background: var(--surface); color: var(--ink); max-height: calc(100vh - 32px); }
+dialog::backdrop { background: rgba(30, 10, 16, .55); }
+.dlg-head { background: var(--borgona); color: #fff; padding: 16px 22px; display: flex; justify-content: space-between; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 1; }
+.dlg-head h2 { margin: 0; font-family: var(--f-display); font-weight: 500; font-size: 1.3rem; }
+.dlg-head button { background: transparent; color: #fff; border-color: rgba(255,255,255,.4); padding: 4px 12px; }
+form.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 20px 22px; }
+@media (max-width: 560px) { form.fields { grid-template-columns: 1fr; } }
+.dlg-foot { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; grid-column: 1 / -1; }
+.dlg-foot .right { display: flex; gap: 8px; margin-left: auto; }
+.hint { font-size: .82rem; color: var(--muted); margin: 0; }
+.banner-prev { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 12px; background: var(--chip); display: block; }
+.check { display: flex; gap: 8px; align-items: center; font-weight: 700; }
+.check input { width: 18px; height: 18px; accent-color: var(--borgona); }
+.readonly-box { grid-column: 1 / -1; font-size: .85rem; color: var(--muted); background: var(--chip); border-radius: 10px; padding: 10px 12px; }
+</style>
+</head>
+<body>
+<header class="brand">
+  <div class="wrap brand-row">
+    <img class="logo" src="/assets/logo-blanco.png" alt="Megalücuma">
+    <div class="grow">
+      <h1>Panel del equipo</h1>
+      <p>Registros y campañas</p>
+    </div>
+    <div class="who" id="who" hidden><span id="who-email"></span><button type="button" id="btn-salir">Salir</button></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="notice" class="notice" hidden></div>
+
+  <!-- Ingreso -->
+  <section class="login" id="v-login" hidden>
+    <h2>Ingresar</h2>
+    <p>Escribe tu correo del equipo y te enviaremos un enlace para entrar, sin contraseña.</p>
+    <form id="f-login" class="field" novalidate>
+      <label for="login-email">Correo</label>
+      <input id="login-email" type="email" autocomplete="email" required>
+      <p class="form-error" id="login-error" hidden></p>
+      <button type="submit" class="primary" id="btn-login">Enviarme el enlace</button>
+    </form>
+    <p id="login-ok" hidden><strong>Revisa tu correo.</strong> Te enviamos un enlace para entrar. Ábrelo en este mismo dispositivo.</p>
+  </section>
+
+  <!-- Panel -->
+  <section id="v-panel" hidden style="display:grid;gap:20px">
+    <div class="tabs" role="tablist">
+      <button type="button" role="tab" id="tab-registros" aria-selected="true">Registros</button>
+      <button type="button" role="tab" id="tab-campanas" aria-selected="false">Campañas</button>
+    </div>
+
+    <div id="p-registros" style="display:grid;gap:18px">
+      <section class="summary" aria-label="Resumen">
+        <div class="stat total"><span class="k" id="s-total-k">Registros</span><span class="v" id="s-total">0</span></div>
+        <div class="stat"><span class="k"><span class="dot" style="background:var(--borgona)"></span>Borgoña</span><span class="v" id="s-borgona">0</span></div>
+        <div class="stat"><span class="k"><span class="dot" style="background:var(--rose)"></span>Rosé</span><span class="v" id="s-rose">0</span></div>
+        <div class="stat"><span class="k"><span class="dot" style="background:var(--olivo)"></span>Olivo</span><span class="v" id="s-olivo">0</span></div>
+        <div class="stat"><span class="k"><span class="dot" style="background:var(--uva)"></span>Uva</span><span class="v" id="s-uva">0</span></div>
+      </section>
+      <div class="toolbar">
+        <input id="q" class="search" type="search" placeholder="Buscar por nombre, celular, correo o Instagram" aria-label="Buscar">
+        <select id="f-campana" aria-label="Filtrar por campaña"><option value="">Todas las campañas</option></select>
+        <select id="f-color" aria-label="Filtrar por color">
+          <option value="">Todos los colores</option>
+          <option value="borgona">Borgoña</option><option value="rose">Rosé</option><option value="olivo">Olivo</option><option value="uva">Uva</option>
+        </select>
+        <button type="button" class="ghost" id="btn-refrescar">Actualizar</button>
+        <button type="button" class="ghost" id="btn-export">Exportar CSV</button>
+        <button type="button" class="primary" id="btn-nuevo">+ Registrar cliente</button>
+      </div>
+      <p id="count-line" class="count-line" hidden></p>
+      <div id="list" class="list"></div>
+    </div>
+
+    <div id="p-campanas" style="display:grid;gap:18px" hidden>
+      <div class="toolbar">
+        <p class="count-line" style="flex:1">Cada campaña tiene su propio enlace con banner y detalles. Compártelo con tus clientes en Instagram o WhatsApp.</p>
+        <button type="button" class="primary" id="btn-nueva-camp">+ Nueva campaña</button>
+      </div>
+      <div class="notice"><strong>Enlace general</strong><span id="link-general" class="camp-link"></span> <button type="button" class="ghost" data-copy-general style="padding:4px 12px;font-size:.82rem">Copiar</button></div>
+      <div id="camp-list" class="list"></div>
+    </div>
+  </section>
+</main>
+
+<!-- Ficha de cliente -->
+<dialog id="dlg-cliente" aria-labelledby="dc-title">
+  <div class="dlg-head"><h2 id="dc-title">Registrar cliente</h2><button type="button" data-close>Cerrar</button></div>
+  <form class="fields" id="f-cliente" novalidate>
+    <div class="field full"><label for="c-nombre">Nombre y apellido <span class="req">*</span></label><input id="c-nombre" required maxlength="120"></div>
+    <div class="field"><label for="c-celular">Celular / WhatsApp</label><input id="c-celular" inputmode="tel" maxlength="30"></div>
+    <div class="field"><label for="c-email">Correo</label><input id="c-email" type="email" maxlength="160"></div>
+    <div class="field"><label for="c-instagram">Instagram</label><input id="c-instagram" maxlength="60"></div>
+    <div class="field"><label for="c-ciudad">Ciudad / distrito</label><input id="c-ciudad" maxlength="120"></div>
+    <div class="field"><label for="c-cumple">Cumpleaños</label><input id="c-cumple" type="date"></div>
+    <div class="field"><label for="c-canal">¿Cómo nos conoció?</label><select id="c-canal"></select></div>
+    <div class="field full"><label for="c-campana">Campaña</label><select id="c-campana"></select></div>
+    <div class="field full"><span class="lbl">Color de agenda favorito</span><div class="pills" id="c-color"></div></div>
+    <div class="field full"><span class="lbl">Productos que compró</span><div class="pills" id="c-productos"></div></div>
+    <div class="field full"><label for="c-notas">Notas internas</label><textarea id="c-notas" maxlength="2000" placeholder="Pedidos especiales, preferencias, seguimiento…"></textarea></div>
+    <div class="readonly-box" id="c-meta" hidden></div>
+    <p class="form-error field full" id="c-error" hidden></p>
+    <div class="dlg-foot">
+      <button type="button" class="danger" id="c-borrar" hidden>Eliminar</button>
+      <div class="right"><button type="button" class="ghost" data-close>Cancelar</button><button type="submit" class="primary" id="c-guardar">Guardar</button></div>
+    </div>
+  </form>
+</dialog>
+
+<!-- Campaña -->
+<dialog id="dlg-camp" aria-labelledby="dk-title">
+  <div class="dlg-head"><h2 id="dk-title">Nueva campaña</h2><button type="button" data-close>Cerrar</button></div>
+  <form class="fields" id="f-camp" novalidate>
+    <div class="field full"><label for="k-titulo">Título <span class="req">*</span></label><input id="k-titulo" maxlength="120" placeholder="Ej. Lanzamiento Agendas 2027"></div>
+    <div class="field full"><label for="k-slug">Enlace <span class="req">*</span></label><input id="k-slug" maxlength="60" placeholder="agendas-2027" autocapitalize="off">
+      <p class="hint" id="k-slug-hint"></p></div>
+    <div class="field full"><label for="k-bajada">Frase corta debajo del título</label><input id="k-bajada" maxlength="300" placeholder="Ej. Regístrate y sé de las primeras en elegir tu color."></div>
+    <div class="field full"><span class="lbl">Banner</span>
+      <img id="k-banner-prev" class="banner-prev" alt="" hidden>
+      <input id="k-banner" type="file" accept="image/jpeg,image/png,image/webp">
+      <p class="hint">JPG, PNG o WebP de hasta 5 MB. Se ve mejor en formato vertical (4:5) o cuadrado.</p></div>
+    <div class="field full"><label for="k-detalle">Detalles de la campaña</label><textarea id="k-detalle" maxlength="4000" style="min-height:120px" placeholder="Qué incluye, precios, fechas de entrega, sorteo, bases…"></textarea></div>
+    <div class="field full"><span class="lbl">Color de la portada</span>
+      <div class="pills" id="k-tema">
+        <label><input type="radio" name="tema" value="borgona" checked><span class="dot" style="background:var(--borgona)"></span>Borgoña</label>
+        <label><input type="radio" name="tema" value="rose"><span class="dot" style="background:var(--rose)"></span>Rosé</label>
+        <label><input type="radio" name="tema" value="olivo"><span class="dot" style="background:var(--olivo)"></span>Olivo</label>
+        <label><input type="radio" name="tema" value="uva"><span class="dot" style="background:var(--uva)"></span>Uva</label>
+      </div></div>
+    <div class="field"><label for="k-boton">Texto del botón</label><input id="k-boton" maxlength="40" placeholder="Registrarme"></div>
+    <div class="field"><label for="k-cierra">Cierra el</label><input id="k-cierra" type="date"></div>
+    <div class="field full"><label for="k-gracias">Mensaje al terminar</label><input id="k-gracias" maxlength="500" placeholder="Ya eres parte de la comunidad Megalücuma…"></div>
+    <label class="check field full" for="k-activa"><input type="checkbox" id="k-activa" checked> Campaña activa (visible en su enlace)</label>
+    <p class="form-error field full" id="k-error" hidden></p>
+    <div class="dlg-foot">
+      <button type="button" class="danger" id="k-borrar" hidden>Eliminar campaña</button>
+      <div class="right"><button type="button" class="ghost" data-close>Cancelar</button><button type="submit" class="primary" id="k-guardar">Guardar campaña</button></div>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script src="/assets/config.js"></script>
+<script src="/assets/supabase.js"></script>
+<script>
+const sb = supabase.createClient(MLU_CONFIG.url, MLU_CONFIG.key);
+const $ = (s) => document.querySelector(s);
+const COLORES = { borgona: ["Borgoña", "var(--borgona)"], rose: ["Rosé", "var(--rose)"], olivo: ["Olivo", "var(--olivo)"], uva: ["Uva", "var(--uva)"] };
+const CANALES = ["Instagram", "Página web", "WhatsApp", "Feria / evento", "Parroquia / grupo", "Recomendación", "Otro"];
+const PRODUCTOS = ["Agenda", "Journal", "Cuaderno", "Stickers", "Marcadores", "Otro"];
+const ORIGEN = location.origin;
+
+let clientes = [], campanas = [], editCliente = null, editCamp = null, bannerFile = null, confirmar = false;
+
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const v = (id) => $("#" + id).value.trim() || null;
+function toast(m) { const t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(toast.h); toast.h = setTimeout(() => (t.hidden = true), 2600); }
+function notice(html) { $("#notice").innerHTML = html; $("#notice").hidden = !html; }
+function fecha(iso, opts = { day: "numeric", month: "long" }) { if (!iso) return ""; const [y, m, d] = iso.slice(0, 10).split("-").map(Number); return new Date(y, m - 1, d).toLocaleDateString("es-PE", opts); }
+const linkCamp = (c) => `${ORIGEN}/c/${c.slug}`;
+async function copiar(texto) {
+  try { await navigator.clipboard.writeText(texto); toast("Enlace copiado"); }
+  catch { window.prompt("Copia el enlace:", texto); }
+}
+
+// ---------- Opciones de formularios ----------
+$("#c-canal").innerHTML = '<option value="">Sin indicar</option>' + CANALES.map((c) => `<option>${c}</option>`).join("");
+$("#c-color").innerHTML = Object.entries(COLORES).map(([k, [n, c]]) => `<label><input type="radio" name="ccolor" value="${k}"><span class="dot" style="background:${c}"></span>${n}</label>`).join("") + '<label><input type="radio" name="ccolor" value=""> Sin indicar</label>';
+$("#c-productos").innerHTML = PRODUCTOS.map((p, i) => `<label><input type="checkbox" id="c-prod-${i}" value="${p}">${p}</label>`).join("");
+$("#link-general").textContent = " " + ORIGEN + "/";
+
+// ---------- Sesión ----------
+async function arrancar() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { mostrarLogin(); return; }
+  $("#who").hidden = false; $("#who-email").textContent = session.user.email;
+  const { data: eq, error } = await sb.from("equipo").select("email").limit(1);
+  if (error || !eq?.length) {
+    $("#v-login").hidden = true; $("#v-panel").hidden = true;
+    notice(`<strong>Tu correo no tiene acceso</strong>${esc(session.user.email)} no está en la lista del equipo. Pide a quien administra el panel que te agregue y vuelve a entrar.`);
+    return;
+  }
+  notice(""); $("#v-login").hidden = true; $("#v-panel").hidden = false;
+  await cargarTodo();
+}
+function mostrarLogin() { $("#who").hidden = true; $("#v-panel").hidden = true; $("#v-login").hidden = false; }
+
+$("#f-login").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const email = $("#login-email").value.trim().toLowerCase();
+  const err = $("#login-error");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = "Escribe un correo válido."; err.hidden = false; return; }
+  err.hidden = true; $("#btn-login").disabled = true;
+  const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: ORIGEN + "/equipo" } });
+  $("#btn-login").disabled = false;
+  if (error) { err.textContent = error.status === 429 ? "Se enviaron muchos enlaces seguidos. Espera unos minutos e inténtalo otra vez." : "No se pudo enviar el enlace. Inténtalo otra vez."; err.hidden = false; return; }
+  $("#f-login").hidden = true; $("#login-ok").hidden = false;
+});
+$("#btn-salir").addEventListener("click", async () => { await sb.auth.signOut(); location.reload(); });
+sb.auth.onAuthStateChange((evt) => { if (evt === "SIGNED_IN" && $("#v-panel").hidden) arrancar(); });
+
+// ---------- Datos ----------
+async function cargarTodo() {
+  const [k, c] = await Promise.all([
+    sb.from("campanas").select("*").order("creado", { ascending: false }),
+    sb.from("clientes").select("*").order("creado", { ascending: false }).limit(5000),
+  ]);
+  if (k.error || c.error) { notice("<strong>No se pudieron cargar los datos</strong>Revisa tu conexión y pulsa Actualizar."); return; }
+  campanas = k.data; clientes = c.data;
+  const opts = campanas.map((x) => `<option value="${x.id}">${esc(x.titulo)}</option>`).join("");
+  const fc = $("#f-campana").value;
+  $("#f-campana").innerHTML = '<option value="">Todas las campañas</option><option value="ninguna">Sin campaña (enlace general)</option>' + opts;
+  $("#f-campana").value = [...$("#f-campana").options].some((o) => o.value === fc) ? fc : "";
+  $("#c-campana").innerHTML = '<option value="">Sin campaña</option>' + opts;
+  renderClientes(); renderCampanas();
+}
+$("#btn-refrescar").addEventListener("click", async () => { await cargarTodo(); toast("Actualizado"); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden && !$("#v-panel").hidden) cargarTodo(); });
+
+// ---------- Pestañas ----------
+function tab(cual) {
+  $("#tab-registros").setAttribute("aria-selected", cual === "r");
+  $("#tab-campanas").setAttribute("aria-selected", cual === "k");
+  $("#p-registros").hidden = cual !== "r"; $("#p-campanas").hidden = cual !== "k";
+}
+$("#tab-registros").addEventListener("click", () => tab("r"));
+$("#tab-campanas").addEventListener("click", () => tab("k"));
+
+// ---------- Registros ----------
+function filtrados() {
+  const q = $("#q").value.trim().toLowerCase(), fk = $("#f-campana").value, fc = $("#f-color").value;
+  return clientes.filter((c) =>
+    (!fk || (fk === "ninguna" ? !c.campana_id : c.campana_id === fk)) && (!fc || c.color === fc) &&
+    (!q || [c.nombre, c.celular, c.email, c.instagram, c.ciudad].some((x) => String(x || "").toLowerCase().includes(q))));
+}
+function renderClientes() {
+  const fk = $("#f-campana").value;
+  const base = clientes.filter((c) => !fk || (fk === "ninguna" ? !c.campana_id : c.campana_id === fk));
+  $("#s-total").textContent = base.length;
+  $("#s-total-k").textContent = fk ? "Registros en esta campaña" : "Registros en total";
+  for (const k of Object.keys(COLORES)) $("#s-" + k).textContent = base.filter((c) => c.color === k).length;
+  const rows = filtrados(), list = $("#list"), cl = $("#count-line");
+  if (!clientes.length) {
+    cl.hidden = true;
+    list.innerHTML = `<div class="empty"><h2>Aún no hay registros</h2><p>Cuando alguien llene el formulario aparecerá aquí, con su campaña, color favorito y datos de contacto. Comparte el enlace desde la pestaña Campañas, o registra a alguien con “+ Registrar cliente”.</p></div>`;
+    return;
+  }
+  cl.hidden = false;
+  cl.textContent = rows.length === clientes.length ? `${clientes.length} registros` : `Mostrando ${rows.length} de ${clientes.length} registros`;
+  if (!rows.length) { list.innerHTML = `<div class="empty"><h2>Nadie coincide</h2><p>Prueba con otra búsqueda o quita los filtros.</p></div>`; return; }
+  const hace7 = Date.now() - 7 * 864e5;
+  const nombreCamp = Object.fromEntries(campanas.map((k) => [k.id, k.titulo]));
+  list.innerHTML = rows.map((c) => {
+    const col = COLORES[c.color];
+    const contacto = [c.celular, c.instagram].filter(Boolean).map(esc).join(" · ") || "Sin contacto";
+    const lineas = [c.email, c.ciudad].filter(Boolean).map(esc).join(" · ");
+    const chips = [
+      new Date(c.creado).getTime() > hace7 ? '<span class="chip new">Nuevo</span>' : "",
+      c.campana_id && nombreCamp[c.campana_id] ? `<span class="chip">${esc(nombreCamp[c.campana_id])}</span>` : "",
+      col ? `<span class="chip"><span class="dot" style="background:${col[1]};width:8px;height:8px"></span>${col[0]}</span>` : "",
+      ...(c.productos || []).map((p) => `<span class="chip">${esc(p)}</span>`),
+    ].join("");
+    return `<article class="card">
+      <span class="stripe" style="background:${col ? col[1] : "var(--line)"}"></span>
+      <div style="min-width:0"><div class="name">${esc(c.nombre)}</div><div class="sub">${contacto}</div></div>
+      <div style="min-width:0"><div class="sub">${lineas}</div><div class="sub">${c.origen === "formulario" ? "Llenó el formulario" : "Registrado por el equipo"} · ${fecha(c.creado, { day: "numeric", month: "short" })}${c.cumple ? " · 🎂 " + fecha(c.cumple) : ""}</div></div>
+      <div class="chips">${chips}</div>
+      <div class="actions"><button type="button" data-cliente="${c.id}">Ver / editar</button></div>
+    </article>`;
+  }).join("");
+}
+["#q", "#f-campana", "#f-color"].forEach((s) => $(s).addEventListener("input", renderClientes));
+$("#list").addEventListener("click", (e) => { const id = e.target.closest("[data-cliente]")?.dataset.cliente; if (id) abrirCliente(clientes.find((c) => c.id === id)); });
+$("#btn-nuevo").addEventListener("click", () => abrirCliente(null));
+
+function abrirCliente(c) {
+  editCliente = c; confirmar = false;
+  $("#dc-title").textContent = c ? c.nombre : "Registrar cliente";
+  for (const k of ["nombre", "celular", "email", "instagram", "ciudad", "cumple", "canal", "notas"]) $("#c-" + k).value = c?.[k] || "";
+  $("#c-campana").value = c?.campana_id || ($("#f-campana").value !== "ninguna" ? $("#f-campana").value : "");
+  const r = document.querySelector(`#c-color input[value="${c?.color || ""}"]`); if (r) r.checked = true;
+  document.querySelectorAll("#c-productos input").forEach((i) => (i.checked = (c?.productos || []).includes(i.value)));
+  $("#c-meta").hidden = !c;
+  if (c) $("#c-meta").textContent = `${c.origen === "formulario" ? "Se registró por el formulario" : "Registrado por el equipo"} el ${fecha(c.creado, { day: "numeric", month: "long", year: "numeric" })}. Novedades: ${c.acepta_novedades ? "sí acepta" : "no acepta"}. Uso de datos: ${c.acepta_datos ? "autorizado" : "no indicado"}.`;
+  $("#c-error").hidden = true; $("#c-borrar").hidden = !c; $("#c-borrar").textContent = "Eliminar";
+  $("#dlg-cliente").showModal();
+}
+$("#f-cliente").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const err = $("#c-error"), nombre = v("c-nombre");
+  if (!nombre || nombre.length < 2) { err.textContent = "Escribe el nombre del cliente."; err.hidden = false; return; }
+  const fila = {
+    nombre, celular: v("c-celular"), email: v("c-email"), instagram: v("c-instagram"), ciudad: v("c-ciudad"),
+    cumple: v("c-cumple"), canal: v("c-canal"), notas: v("c-notas"), campana_id: v("c-campana"),
+    color: document.querySelector("#c-color input:checked")?.value || null,
+    productos: [...document.querySelectorAll("#c-productos input:checked")].map((i) => i.value),
+  };
+  $("#c-guardar").disabled = true;
+  const { error } = editCliente
+    ? await sb.from("clientes").update(fila).eq("id", editCliente.id)
+    : await sb.from("clientes").insert({ ...fila, origen: "equipo" });
+  $("#c-guardar").disabled = false;
+  if (error) { err.textContent = "No se pudo guardar. Revisa los datos e inténtalo otra vez."; err.hidden = false; return; }
+  $("#dlg-cliente").close(); toast(editCliente ? "Cambios guardados" : "Cliente registrado"); cargarTodo();
+});
+$("#c-borrar").addEventListener("click", async () => {
+  if (!confirmar) { confirmar = true; $("#c-borrar").textContent = "¿Seguro? Sí, eliminar"; return; }
+  const { error } = await sb.from("clientes").delete().eq("id", editCliente.id);
+  if (error) { $("#c-error").textContent = "No se pudo eliminar."; $("#c-error").hidden = false; return; }
+  $("#dlg-cliente").close(); toast("Registro eliminado"); cargarTodo();
+});
+
+$("#btn-export").addEventListener("click", () => {
+  const rows = filtrados();
+  const nombreCamp = Object.fromEntries(campanas.map((k) => [k.id, k.titulo]));
+  const cols = [["Fecha", (c) => c.creado.slice(0, 10)], ["Nombre", (c) => c.nombre], ["Celular", (c) => c.celular], ["Correo", (c) => c.email],
+    ["Instagram", (c) => c.instagram], ["Ciudad", (c) => c.ciudad], ["Cumpleaños", (c) => c.cumple], ["Cómo nos conoció", (c) => c.canal],
+    ["Color", (c) => COLORES[c.color]?.[0]], ["Campaña", (c) => nombreCamp[c.campana_id]], ["Productos", (c) => (c.productos || []).join("; ")],
+    ["Acepta novedades", (c) => (c.acepta_novedades ? "Sí" : "No")], ["Origen", (c) => c.origen], ["Notas", (c) => c.notas]];
+  const cell = (x) => `"${String(x ?? "").replace(/"/g, '""')}"`;
+  const csv = "﻿" + [cols.map((c) => cell(c[0])).join(",")].concat(rows.map((r) => cols.map((c) => cell(c[1](r))).join(","))).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  a.download = `registros-megalucuma-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
+// ---------- Campañas ----------
+function renderCampanas() {
+  const el = $("#camp-list");
+  if (!campanas.length) {
+    el.innerHTML = `<div class="empty"><h2>Crea tu primera campaña</h2><p>Por ejemplo “Lanzamiento Agendas 2027”: sube un banner, escribe los detalles y obtén un enlace propio para compartir en Instagram o WhatsApp.</p></div>`;
+    return;
+  }
+  const hoy = new Date().toISOString().slice(0, 10);
+  el.innerHTML = campanas.map((k) => {
+    const n = clientes.filter((c) => c.campana_id === k.id).length;
+    const vencida = k.cierra && k.cierra < hoy;
+    const estado = !k.activa ? '<span class="estado off">Pausada</span>' : vencida ? '<span class="estado off">Cerrada</span>' : '<span class="estado on">● Activa</span>';
+    return `<article class="card camp">
+      ${k.banner_url ? `<img class="thumb" src="${esc(k.banner_url)}" alt="">` : `<div class="thumb" style="background:${COLORES[k.tema][1]}"></div>`}
+      <div style="min-width:0"><div class="name">${esc(k.titulo)}</div><div class="link">${esc(linkCamp(k))}</div><div>${estado}${k.cierra ? ` <span class="sub">· cierra el ${fecha(k.cierra)}</span>` : ""}</div></div>
+      <div><div class="stat" style="border:none;padding:0;background:none"><span class="k">Registros</span><span class="v">${n}</span></div></div>
+      <div class="actions">
+        <button type="button" data-copy="${k.id}">Copiar enlace</button>
+        <a class="btnlink" href="/c/${esc(k.slug)}" target="_blank" rel="noopener">Ver página</a>
+        <button type="button" data-ver="${k.id}">Ver registros</button>
+        <button type="button" data-camp="${k.id}">Editar</button>
+      </div>
+    </article>`;
+  }).join("");
+}
+$("#camp-list").addEventListener("click", (e) => {
+  const t = e.target.closest("button"); if (!t) return;
+  const k = campanas.find((x) => x.id === (t.dataset.copy || t.dataset.ver || t.dataset.camp));
+  if (!k) return;
+  if (t.dataset.copy) copiar(linkCamp(k));
+  if (t.dataset.ver) { $("#f-campana").value = k.id; renderClientes(); tab("r"); }
+  if (t.dataset.camp) abrirCamp(k);
+});
+document.querySelector("[data-copy-general]").addEventListener("click", () => copiar(ORIGEN + "/"));
+$("#btn-nueva-camp").addEventListener("click", () => abrirCamp(null));
+
+const slugify = (s) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
+let slugTocado = false;
+function hintSlug() { const s = $("#k-slug").value; $("#k-slug-hint").textContent = s ? `${ORIGEN}/c/${s}` : ""; }
+$("#k-titulo").addEventListener("input", () => { if (!slugTocado && !editCamp) { $("#k-slug").value = slugify($("#k-titulo").value); hintSlug(); } });
+$("#k-slug").addEventListener("input", () => { slugTocado = true; $("#k-slug").value = slugify($("#k-slug").value.replace(/-$/, "")) + ($("#k-slug").value.endsWith("-") ? "-" : ""); hintSlug(); });
+$("#k-banner").addEventListener("change", () => {
+  bannerFile = $("#k-banner").files[0] || null;
+  if (bannerFile && bannerFile.size > 5 * 1024 * 1024) { $("#k-error").textContent = "El banner pesa más de 5 MB. Usa una imagen más liviana."; $("#k-error").hidden = false; bannerFile = null; $("#k-banner").value = ""; return; }
+  if (bannerFile) { $("#k-banner-prev").src = URL.createObjectURL(bannerFile); $("#k-banner-prev").hidden = false; }
+});
+
+function abrirCamp(k) {
+  editCamp = k; bannerFile = null; slugTocado = false; confirmar = false;
+  $("#dk-title").textContent = k ? "Editar campaña" : "Nueva campaña";
+  $("#k-titulo").value = k?.titulo || ""; $("#k-slug").value = k?.slug || ""; $("#k-bajada").value = k?.bajada || "";
+  $("#k-detalle").value = k?.detalle || ""; $("#k-boton").value = k?.boton || ""; $("#k-cierra").value = k?.cierra || "";
+  $("#k-gracias").value = k?.mensaje_gracias || ""; $("#k-activa").checked = k ? k.activa : true;
+  document.querySelector(`#k-tema input[value="${k?.tema || "borgona"}"]`).checked = true;
+  $("#k-banner").value = ""; $("#k-banner-prev").hidden = !k?.banner_url; if (k?.banner_url) $("#k-banner-prev").src = k.banner_url;
+  $("#k-error").hidden = true; $("#k-borrar").hidden = !k; $("#k-borrar").textContent = "Eliminar campaña";
+  hintSlug(); $("#dlg-camp").showModal();
+}
+$("#f-camp").addEventListener("submit", async (ev) => {
+  ev.preventDefault();
+  const err = $("#k-error"), fail = (m) => { err.textContent = m; err.hidden = false; $("#k-guardar").disabled = false; };
+  const titulo = v("k-titulo"), slug = $("#k-slug").value.replace(/-+$/, "");
+  if (!titulo || titulo.length < 2) return fail("Escribe un título para la campaña.");
+  if (!slug) return fail("Escribe el enlace de la campaña (solo letras, números y guiones).");
+  $("#k-guardar").disabled = true; err.hidden = true;
+  let banner_url = editCamp?.banner_url || null;
+  if (bannerFile) {
+    const ext = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" }[bannerFile.type] || "jpg";
+    const path = `${slug}-${Date.now()}.${ext}`;
+    const up = await sb.storage.from("banners").upload(path, bannerFile, { contentType: bannerFile.type, cacheControl: "31536000" });
+    if (up.error) return fail("No se pudo subir el banner. Prueba con otra imagen.");
+    banner_url = sb.storage.from("banners").getPublicUrl(path).data.publicUrl;
+  }
+  const fila = {
+    titulo, slug, bajada: v("k-bajada"), detalle: v("k-detalle"), boton: v("k-boton"), cierra: v("k-cierra"),
+    mensaje_gracias: v("k-gracias"), activa: $("#k-activa").checked, banner_url,
+    tema: document.querySelector("#k-tema input:checked").value,
+  };
+  const { error } = editCamp ? await sb.from("campanas").update(fila).eq("id", editCamp.id) : await sb.from("campanas").insert(fila);
+  if (error) return fail(error.code === "23505" ? "Ya existe una campaña con ese enlace. Cambia el enlace." : "No se pudo guardar la campaña. Revisa los datos.");
+  $("#k-guardar").disabled = false; $("#dlg-camp").close();
+  toast(editCamp ? "Campaña actualizada" : "Campaña creada"); cargarTodo();
+});
+$("#k-borrar").addEventListener("click", async () => {
+  if (!confirmar) { confirmar = true; $("#k-borrar").textContent = "¿Seguro? Los registros se conservan"; return; }
+  const { error } = await sb.from("campanas").delete().eq("id", editCamp.id);
+  if (error) { $("#k-error").textContent = "No se pudo eliminar."; $("#k-error").hidden = false; return; }
+  $("#dlg-camp").close(); toast("Campaña eliminada"); cargarTodo();
+});
+
+document.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => b.closest("dialog").close()));
+arrancar();
+</script>
+</body>
+</html>

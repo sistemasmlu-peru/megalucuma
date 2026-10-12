@@ -1,0 +1,63 @@
+/* Megalücuma: tokens y componentes compartidos por el formulario y el panel del equipo. */
+:root {
+  --borgona: #4c1825; --olivo: #4a4526; --rose: #bb8d83; --uva: #694463; --oro: #c3934b;
+  --bg: #faf6f4; --surface: #ffffff; --ink: #2d1a1f; --muted: #7b6367; --line: #ecdfdb;
+  --chip: #f4e9e6; --accent: #4c1825; --accent-ink: #ffffff; --danger: #a3302f;
+  --f-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --f-body: "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius: 14px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1b1114; --surface: #251a1e; --ink: #f4e9e7; --muted: #b9a1a5; --line: #3b2a2f;
+    --chip: #33242a; --accent: #d7a79c; --accent-ink: #2a1217; --danger: #ec8a7d;
+    color-scheme: dark;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.5; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 16px; }
+
+.brand {
+  background-color: var(--borgona);
+  background-image: url("ornamento.webp");
+  background-size: 560px auto; background-position: right -90px center; background-repeat: no-repeat;
+  color: #fff;
+}
+.brand-row { display: flex; align-items: center; gap: 18px; padding-block: 22px; flex-wrap: wrap; }
+.brand img.logo { height: 46px; width: auto; }
+.brand h1 { font-family: var(--f-display); font-weight: 500; font-size: 1.6rem; margin: 0; text-wrap: balance; }
+.brand p { margin: 0; color: #ead3cd; font-size: .92rem; }
+
+input, select, textarea {
+  font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: 10px 12px; width: 100%;
+}
+textarea { min-height: 80px; resize: vertical; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--oro); outline-offset: 2px; }
+button { font: inherit; cursor: pointer; border-radius: 999px; padding: 10px 20px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font-weight: 700; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.ghost { background: transparent; }
+button.danger { color: var(--danger); border-color: currentColor; background: transparent; }
+button:disabled { opacity: .55; cursor: not-allowed; }
+
+.field { display: grid; gap: 6px; min-width: 0; }
+.field.full { grid-column: 1 / -1; }
+.field > label, .field > .lbl { font-size: .74rem; text-transform: uppercase; letter-spacing: .08em; font-weight: 800; color: var(--muted); }
+.req { color: var(--danger); }
+.dot { width: 11px; height: 11px; border-radius: 50%; flex: none; display: inline-block; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pills label { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px 7px 9px; cursor: pointer; font-weight: 700; font-size: .9rem; }
+.pills input { width: auto; margin: 0; accent-color: var(--borgona); }
+.pills label:has(input:checked) { border-color: var(--ink); background: var(--chip); }
+.notice { border-radius: var(--radius); padding: 12px 16px; background: var(--chip); }
+.notice strong { display: block; }
+.form-error { color: var(--danger); font-weight: 700; margin: 0; }
+
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; font-weight: 700; box-shadow: 0 6px 20px rgba(0,0,0,.2); z-index: 10; }
+@media (prefers-reduced-motion: no-preference) { .toast { animation: up .2s ease-out; } @keyframes up { from { transform: translate(-50%, 8px); opacity: 0; } } }
+@media (max-width: 640px) { .brand { background-size: 340px auto; background-position: right -170px top -40px; } }
