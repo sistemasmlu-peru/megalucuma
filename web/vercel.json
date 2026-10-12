@@ -1,7 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/c/:slug", "destination": "/index.html" }
+    { "source": "/c/:slug", "destination": "/" }
   ],
   "headers": [
     { "source": "/equipo(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }] }
