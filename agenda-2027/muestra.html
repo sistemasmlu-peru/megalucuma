@@ -121,6 +121,71 @@ h1,h2,h3,.serif{font-family:'Fraunces',serif;font-weight:500;color:var(--borgona
 .finde .gracias{height:8.5mm}
 .finde .dia .escribir{background:repeating-linear-gradient(to bottom,transparent 0 4.9mm,var(--linea) 4.9mm 5.05mm)}
 
+
+/* ---------- comunes (modelo 2026) ---------- */
+.banda{position:relative;background:var(--m,var(--borgona));color:#fff;text-align:center;font-family:'Fraunces',serif;font-size:13pt;font-weight:400;height:9.5mm;line-height:9.5mm;border-radius:.8mm;margin-bottom:4mm}
+.banda::before,.banda::after{content:"✦";position:absolute;top:0;font-size:7pt;color:var(--oro)}
+.banda::before{left:4mm}.banda::after{right:4mm}
+.fondo-orn{position:absolute;inset:0;background:url(img/ornamento.png) center/105% auto no-repeat;opacity:.13}
+.lin{background:repeating-linear-gradient(to bottom,transparent 0 5mm,var(--lc,#cdb9b2) 5mm 5.15mm)}
+
+/* ---------- PROPÓSITOS TRIMESTRALES ---------- */
+.prop .cuatro{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:3mm;height:calc(100% - 13.5mm)}
+.arco{position:relative;border:.25mm solid var(--oro);border-radius:15mm 15mm 3mm 3mm;padding:5mm 3mm 3mm;background:rgba(255,255,255,.85);display:flex;flex-direction:column}
+.arco h4{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:10.5pt;text-align:center;color:var(--borgona);margin-bottom:1.5mm}
+.arco .q{font-size:5.4pt;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--uva);margin-top:1.2mm}
+.arco .q.obj{color:var(--borgona)}
+.arco .ln{height:9.5mm}
+.arco .ln.big{height:9.5mm}
+
+/* ---------- EVENTOS ---------- */
+.eventos .doce{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(4,1fr);gap:2.2mm;height:calc(100% - 13.5mm)}
+.mesbox{border:.2mm solid var(--rose);background:rgba(255,255,255,.88);padding:1.8mm 2.2mm 1.5mm;display:flex;flex-direction:column;border-radius:.6mm}
+.mesbox h5{font-family:'Fraunces',serif;font-style:italic;font-weight:400;font-size:8.5pt;text-align:center;color:var(--borgona);margin-bottom:.5mm}
+.mesbox .lin{flex:1}
+
+/* ---------- RUTINA ---------- */
+.rutina .horas{display:grid;grid-template-columns:1fr 1fr;column-gap:4mm;margin-bottom:3.5mm}
+.rutina .h{display:flex;align-items:flex-end;height:4.5mm;font-size:6.4pt;color:var(--uva);font-weight:600}
+.rutina .h b{width:8mm;font-weight:600}
+.rutina .h span{flex:1;height:100%;background-image:radial-gradient(circle,var(--rose) .22mm,transparent .3mm);background-size:3mm 4.5mm;background-position:0 100%}
+.rutina .notas{border-top:2.4mm solid var(--borgona);background:var(--fondo-rose);height:28mm;padding:2mm 3mm;position:relative}
+.rutina .notas::before{content:"";position:absolute;left:0;right:0;top:-2.4mm;height:2.4mm;background:repeating-linear-gradient(110deg,transparent 0 3mm,rgba(195,147,75,.8) 3mm 3.5mm)}
+.rutina .notas em{font-family:'Fraunces',serif;color:var(--borgona);font-size:9pt}
+
+/* ---------- CALENDARIO (doble página, modelo 2026) ---------- */
+.cm .cab{height:21mm;display:flex;align-items:center;gap:4mm}
+.cm .cab h2{font-family:'Fraunces',serif;font-weight:500;font-size:22pt;color:var(--m);line-height:1}
+.cm .cab .fr{font-size:6.6pt;line-height:1.4;color:var(--tinta);flex:1}
+.cm .cab .fr i{font-family:'Fraunces',serif;font-size:7.6pt}
+.cm .cab .fr b{color:var(--m);font-style:italic}
+.cm .rejilla{display:grid;grid-template-columns:repeat(4,1fr);gap:1mm;height:calc(100% - 21mm)}
+.cm .dw{background:var(--m);color:#fff;font-family:'Fraunces',serif;font-style:italic;font-size:7.5pt;text-align:center;height:6mm;line-height:6mm;border-radius:.4mm}
+.cm .c{border:.18mm solid #b9a8a3;position:relative;background:#fff}
+.cm .c .n{position:absolute;top:1mm;right:1.3mm;font-size:8.5pt;font-weight:700;color:var(--m)}
+.cm .c.fer .n{color:var(--feriado);font-style:italic}
+.cm .c.vacio{background:var(--fondo-rose);border-color:transparent}
+.cm .pend{border:.18mm solid #b9a8a3;padding:1.5mm 2mm}
+.cm .festivos{border:.18mm solid #b9a8a3;padding:1.6mm 2mm;border-top:2mm solid var(--m)}
+.cm .festivos .t{font-family:'Fraunces',serif;font-size:7.4pt;color:var(--m);margin-bottom:.8mm}
+.cm .festivos li{list-style:none;font-size:5.2pt;line-height:1.45;font-style:italic;font-weight:700;color:var(--m)}
+.cm .festivos li.fer{color:var(--feriado)}
+.cm .festivos li.pre{font-weight:900}
+.cm .mision{border:.18mm solid #b9a8a3;border-radius:0 0 4mm 4mm;text-align:center;padding:0 2mm 1.5mm;position:relative}
+.cm .mision .cinta{background:var(--m);color:#fff;font-family:'Fraunces',serif;font-size:5.6pt;padding:1mm 0 2.2mm;margin:0 -2mm 1.2mm;clip-path:polygon(0 0,100% 0,100% 60%,50% 100%,0 60%)}
+.cm .mision b{display:block;font-family:'Fraunces',serif;font-size:6.8pt;color:var(--tinta);margin-bottom:.5mm}
+.cm .mision p{font-size:5.2pt;line-height:1.35;color:var(--suave)}
+.player{display:flex;align-items:center;gap:2.5mm;flex:1}
+.player .ico{width:11mm;height:11mm;border-radius:1.5mm;background:var(--m);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12pt}
+.player .info{flex:1;max-width:40mm}
+.player .tt{font-family:'Fraunces',serif;font-size:7pt;color:var(--tinta);border-bottom:.15mm solid #b9a8a3;padding-bottom:.6mm;margin-bottom:.8mm}
+.player .bar{height:.5mm;background:#ddd;position:relative;margin-bottom:1.2mm}.player .bar::before{content:"";position:absolute;left:0;top:0;bottom:0;width:35%;background:var(--m)}
+.player .ctl{display:flex;justify-content:center;gap:4mm;color:var(--m);font-size:7pt;align-items:center}
+.player .ctl .pl{width:5mm;height:5mm;border-radius:50%;background:var(--m);color:#fff;display:flex;align-items:center;justify-content:center;font-size:5pt}
+.qrbox{width:15mm;height:15mm;border:.2mm dashed var(--oro);display:flex;align-items:center;justify-content:center;font-size:5pt;color:var(--suave);text-align:center}
+
+.pestana-mes{position:absolute;right:0;width:7mm;height:13mm;background:var(--m);color:#fff;font-size:5.5pt;font-weight:800;letter-spacing:.08em;writing-mode:vertical-rl;display:flex;align-items:center;justify-content:center;border-radius:1mm 0 0 1mm}
+
 /* vista previa en pantalla */
 @media screen{
   body{background:#e9e4e1;padding:10mm;display:flex;flex-wrap:wrap;gap:6mm;justify-content:center}
@@ -130,7 +195,6 @@ h1,h2,h3,.serif{font-family:'Fraunces',serif;font-weight:500;color:var(--borgona
 </head>
 <body>
 
-<!-- 1-2 · HOLA (doble página) -->
 <section class="page verso hola">
   <div class="safe">
     <div class="eyebrow">Planner 2027 · Megalücuma</div>
@@ -154,8 +218,6 @@ h1,h2,h3,.serif{font-family:'Fraunces',serif;font-weight:500;color:var(--borgona
   </div>
   <div class="folio">Planner 2027</div>
 </section>
-
-<!-- 3-4 · ORACIÓN + CARÁTULA ENERO -->
 <section class="page verso oracion">
   <div class="safe">
     <div class="marco"></div>
@@ -172,44 +234,73 @@ h1,h2,h3,.serif{font-family:'Fraunces',serif;font-weight:500;color:var(--borgona
   </div>
   <div class="folio">Planner 2027</div>
 </section>
-<section class="page recto caratula">
-  <div class="orn"></div>
-  <div class="pestana"><span>ENERO</span></div>
+
+<section class="page recto prop" style="--m:var(--borgona)">
+  <div class="fondo-orn"></div>
   <div class="safe">
-    <div class="num">01 · 2027</div>
-    <div class="mes">Enero</div>
-    <h2>¿Quién es el Espíritu Santo?</h2>
-    <div class="ref">Juan 14, 16-17 · Catecismo, 685-686</div>
-    <p>El Espíritu Santo no es una fuerza impersonal ni una energía que podamos controlar. Es la tercera Persona de la Santísima Trinidad, verdadero Dios junto al Padre y al Hijo. Jesús lo promete a sus discípulos como el Paráclito, aquel que permanece con ellos y los conduce a la verdad.</p>
-    <p>Conocer al Espíritu Santo es entrar en una relación más profunda con Dios, reconocer su presencia y aprender a vivir como hijos suyos.</p>
-    <div class="meditar"><span>Para meditar</span>¿Qué lugar ocupa el Espíritu Santo en mi oración y en mis decisiones cotidianas?</div>
+    <div class="banda">Propósitos trimestrales</div>
+    <div class="cuatro">
+      <div class="arco"><h4>Ene · Feb · Mar</h4>
+<div class="q obj">Objetivo</div><div class="ln lin"></div>
+<div class="q">¿Por qué es importante?</div><div class="ln lin"></div>
+<div class="q">¿Qué necesito?</div><div class="ln lin"></div>
+<div class="q">Estrategia</div><div class="ln lin" style="flex:1"></div></div><div class="arco"><h4>Abr · May · Jun</h4>
+<div class="q obj">Objetivo</div><div class="ln lin"></div>
+<div class="q">¿Por qué es importante?</div><div class="ln lin"></div>
+<div class="q">¿Qué necesito?</div><div class="ln lin"></div>
+<div class="q">Estrategia</div><div class="ln lin" style="flex:1"></div></div><div class="arco"><h4>Jul · Ago · Sep</h4>
+<div class="q obj">Objetivo</div><div class="ln lin"></div>
+<div class="q">¿Por qué es importante?</div><div class="ln lin"></div>
+<div class="q">¿Qué necesito?</div><div class="ln lin"></div>
+<div class="q">Estrategia</div><div class="ln lin" style="flex:1"></div></div><div class="arco"><h4>Oct · Nov · Dic</h4>
+<div class="q obj">Objetivo</div><div class="ln lin"></div>
+<div class="q">¿Por qué es importante?</div><div class="ln lin"></div>
+<div class="q">¿Qué necesito?</div><div class="ln lin"></div>
+<div class="q">Estrategia</div><div class="ln lin" style="flex:1"></div></div>
+    </div>
+  </div>
+  <div class="folio">Planner 2027</div>
+</section>
+
+
+<section class="page verso eventos" style="--m:var(--uva)">
+  <div class="fondo-orn"></div>
+  <div class="safe">
+    <div class="banda">Eventos importantes</div>
+    <div class="doce"><div class="mesbox"><h5>Enero</h5><div class="lin"></div></div><div class="mesbox"><h5>Febrero</h5><div class="lin"></div></div><div class="mesbox"><h5>Marzo</h5><div class="lin"></div></div><div class="mesbox"><h5>Abril</h5><div class="lin"></div></div><div class="mesbox"><h5>Mayo</h5><div class="lin"></div></div><div class="mesbox"><h5>Junio</h5><div class="lin"></div></div><div class="mesbox"><h5>Julio</h5><div class="lin"></div></div><div class="mesbox"><h5>Agosto</h5><div class="lin"></div></div><div class="mesbox"><h5>Septiembre</h5><div class="lin"></div></div><div class="mesbox"><h5>Octubre</h5><div class="lin"></div></div><div class="mesbox"><h5>Noviembre</h5><div class="lin"></div></div><div class="mesbox"><h5>Diciembre</h5><div class="lin"></div></div></div>
+  </div>
+  <div class="folio">Planner 2027</div>
+</section>
+
+
+<section class="page recto rutina" style="--m:var(--borgona)">
+  <div class="safe">
+    <div class="banda">Mi rutina diaria</div>
+    <div class="horas"><div><div class="h"><b>5:00</b><span></span></div><div class="h"><b>5:20</b><span></span></div><div class="h"><b>5:40</b><span></span></div><div class="h"><b>6:00</b><span></span></div><div class="h"><b>6:20</b><span></span></div><div class="h"><b>6:40</b><span></span></div><div class="h"><b>7:00</b><span></span></div><div class="h"><b>7:20</b><span></span></div><div class="h"><b>7:40</b><span></span></div><div class="h"><b>8:00</b><span></span></div><div class="h"><b>8:20</b><span></span></div><div class="h"><b>8:40</b><span></span></div><div class="h"><b>9:00</b><span></span></div><div class="h"><b>9:20</b><span></span></div><div class="h"><b>9:40</b><span></span></div><div class="h"><b>10:00</b><span></span></div><div class="h"><b>10:20</b><span></span></div><div class="h"><b>10:40</b><span></span></div><div class="h"><b>11:00</b><span></span></div><div class="h"><b>11:20</b><span></span></div><div class="h"><b>11:40</b><span></span></div><div class="h"><b>12:00</b><span></span></div><div class="h"><b>12:20</b><span></span></div><div class="h"><b>12:40</b><span></span></div><div class="h"><b>13:00</b><span></span></div><div class="h"><b>13:20</b><span></span></div></div><div><div class="h"><b>13:40</b><span></span></div><div class="h"><b>14:00</b><span></span></div><div class="h"><b>14:20</b><span></span></div><div class="h"><b>14:40</b><span></span></div><div class="h"><b>15:00</b><span></span></div><div class="h"><b>15:20</b><span></span></div><div class="h"><b>15:40</b><span></span></div><div class="h"><b>16:00</b><span></span></div><div class="h"><b>16:20</b><span></span></div><div class="h"><b>16:40</b><span></span></div><div class="h"><b>17:00</b><span></span></div><div class="h"><b>17:20</b><span></span></div><div class="h"><b>17:40</b><span></span></div><div class="h"><b>18:00</b><span></span></div><div class="h"><b>18:20</b><span></span></div><div class="h"><b>18:40</b><span></span></div><div class="h"><b>19:00</b><span></span></div><div class="h"><b>19:20</b><span></span></div><div class="h"><b>19:40</b><span></span></div><div class="h"><b>20:00</b><span></span></div><div class="h"><b>20:20</b><span></span></div><div class="h"><b>20:40</b><span></span></div><div class="h"><b>21:00</b><span></span></div><div class="h"><b>21:20</b><span></span></div><div class="h"><b>21:40</b><span></span></div><div class="h"><b>22:00</b><span></span></div></div></div>
+    <div class="notas"><em>Notas:</em></div>
+  </div>
+  <div class="folio">Planner 2027</div>
+</section>
+
+
+<section class="page verso cm" style="--m:var(--borgona)">
+  <div class="safe">
+    <div class="cab"><h2>Enero</h2><div class="fr"><i>«Frase del mes 2027 (pendiente)».</i> — <b>Autor</b></div></div>
+    <div class="rejilla" id="cal-izq"></div>
+  </div>
+</section>
+<section class="page recto cm" style="--m:var(--borgona)">
+  <div class="pestana-mes" style="top:16mm">ENE</div>
+  <div class="safe">
+    <div class="cab">
+      <div class="player"><div class="ico">▶</div><div class="info"><div class="tt">Canción o video del mes (pendiente)</div><div class="bar"></div><div class="ctl"><span>⏮</span><span class="pl">▶</span><span>⏭</span></div></div></div>
+      <div class="qrbox">QR</div>
+    </div>
+    <div class="rejilla" id="cal-der"></div>
   </div>
 </section>
 
-<!-- 5-6 · CALENDARIO HIGHLIGHTS + PANORAMA -->
-<section class="page verso cal">
-  <div class="safe" style="display:flex;flex-direction:column">
-    <div class="top"><h2>Enero <i>2027</i></h2><div class="eyebrow">Highlights</div></div>
-    <div class="frase">Frase del mes: <b>(pendiente: enviar el texto para 2027)</b></div>
-    <div class="grid" id="grid-ene"></div>
-    <div class="bajo">
-      <div class="caja mision"><div class="t">💌 Misión secreta del mes</div><p>(Pendiente: enviar la misión de enero 2027).</p></div>
-      <div class="qr"><div class="cuadro"></div>QR: receta o video</div>
-    </div>
-    <div class="santoral"><div class="titulo-sec">Santoral y notas</div>
-      <ul>
-        <li class="fer pre"><b>1</b><span>Santa María, Madre de Dios · Año Nuevo</span></li>
-        <li><b>6</b><span>Epifanía del Señor</span></li>
-        <li><b>10</b><span>Bautismo del Señor</span></li>
-        <li><b>24</b><span>San Francisco de Sales</span></li>
-        <li><b>28</b><span>Santo Tomás de Aquino</span></li>
-      </ul>
-    </div>
-    <div class="notas lineas" style="margin-top:1mm"></div>
-  </div>
-  <div class="folio">Enero</div>
-</section>
-<section class="page recto panorama">
+<section class="page verso panorama">
   <div class="safe">
     <div class="eyebrow">Enero 2027</div>
     <h2>Panorama del mes</h2>
@@ -225,47 +316,40 @@ h1,h2,h3,.serif{font-family:'Fraunces',serif;font-weight:500;color:var(--borgona
   </div>
   <div class="folio">Panorama</div>
 </section>
-
-<!-- 7-8 · SEMANA (doble página) -->
-<section class="page verso sem">
+<section class="page recto caratula">
+  <div class="orn"></div>
+  <div class="pestana"><span>ENERO</span></div>
   <div class="safe">
-    <div class="cab"><h3>Enero</h3><div class="r">Semana 2 · 4 – 10 de enero</div></div>
-    <div class="cols" id="sem-izq"></div>
+    <div class="num">01 · 2027</div>
+    <div class="mes">Enero</div>
+    <h2>¿Quién es el Espíritu Santo?</h2>
+    <div class="ref">Juan 14, 16-17 · Catecismo, 685-686</div>
+    <p>El Espíritu Santo no es una fuerza impersonal ni una energía que podamos controlar. Es la tercera Persona de la Santísima Trinidad, verdadero Dios junto al Padre y al Hijo. Jesús lo promete a sus discípulos como el Paráclito, aquel que permanece con ellos y los conduce a la verdad.</p>
+    <p>Conocer al Espíritu Santo es entrar en una relación más profunda con Dios, reconocer su presencia y aprender a vivir como hijos suyos.</p>
+    <div class="meditar"><span>Para meditar</span>¿Qué lugar ocupa el Espíritu Santo en mi oración y en mis decisiones cotidianas?</div>
   </div>
-  <div class="folio">Enero · 2027</div>
 </section>
-<section class="page recto sem">
-  <div class="safe">
-    <div class="cab"><h3 style="font-size:10pt">«Habla, Señor, que tu siervo escucha»</h3><div class="r">1 Sam 3, 10</div></div>
-    <div class="cols" id="sem-der"></div>
-  </div>
-  <div class="folio">Enero · 2027</div>
-</section>
-
 <script>
-// ---------- calendario de enero 2027 (semana empieza el lunes) ----------
-const fiestas = {1:{t:'Sta. María, Madre de Dios',fer:1,pre:1},6:{t:'Epifanía'},10:{t:'Bautismo del Señor'},24:{t:'S. Francisco de Sales'},28:{t:'S. Tomás de Aquino'}};
-function mes(el, y, m, f){
-  const g=document.getElementById(el);
-  ['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'].forEach(d=>g.insertAdjacentHTML('beforeend',`<div class="dow">${d}</div>`));
-  const first=(new Date(y,m,1).getDay()+6)%7, dias=new Date(y,m+1,0).getDate();
-  const total=Math.ceil((first+dias)/7)*7;
-  for(let i=0;i<total;i++){
-    const n=i-first+1;
-    if(n<1||n>dias){g.insertAdjacentHTML('beforeend','<div class="d vacio"></div>');continue}
-    const x=f[n]||{}, dom=(i%7==6);
-    g.insertAdjacentHTML('beforeend',`<div class="d ${dom?'dom':''} ${x.fer?'feriado':''}">${n}${x.t?`<div class="fiesta ${x.pre?'precepto':''}">${x.t}</div>`:''}</div>`);
+// Calendario mensual en doble página (modelo agenda 2026). Semana de lunes a domingo.
+const MES = {y:2027, m:0,
+  festivos:[{d:1,t:'Santa María, Madre de Dios',fer:1,pre:1},{d:6,t:'Epifanía del Señor'},{d:10,t:'Bautismo del Señor'},{d:24,t:'San Francisco de Sales'},{d:28,t:'Santo Tomás de Aquino'}],
+  mision:{t:"Título de la misión",p:'(Pendiente: enviar el texto de la misión de enero).'}};
+(function(){
+  const {y,m}=MES, first=(new Date(y,m,1).getDay()+6)%7, dias=new Date(y,m+1,0).getDate();
+  const filas=Math.ceil((first+dias)/7), fer=new Set(MES.festivos.filter(f=>f.fer).map(f=>f.d));
+  const izq=document.getElementById('cal-izq'), der=document.getElementById('cal-der');
+  const rows=`grid-template-rows:6mm repeat(${filas},1fr)`; izq.style=rows; der.style=rows;
+  ['Lunes','Martes','Miércoles','Jueves'].forEach(d=>izq.insertAdjacentHTML('beforeend',`<div class="dw">${d}</div>`));
+  ['Viernes','Sábado','Domingo','Pendientes del mes'].forEach(d=>der.insertAdjacentHTML('beforeend',`<div class="dw">${d}</div>`));
+  const celda=(i,st='')=>{const n=i-first+1; return (n<1||n>dias)?`<div class="c vacio" style="${st}"></div>`:`<div class="c ${fer.has(n)?'fer':''}" style="${st}"><span class="n">${n}</span></div>`};
+  for(let r=0;r<filas;r++){
+    for(let c=0;c<4;c++) izq.insertAdjacentHTML('beforeend',celda(r*7+c));
+    for(let c=4;c<7;c++) der.insertAdjacentHTML('beforeend',celda(r*7+c,`grid-row:${r+2};grid-column:${c-3}`));
+    if(r===0) der.insertAdjacentHTML('beforeend',`<div class="pend lin" style="grid-row:2 / span ${filas-2};grid-column:4;--lc:#d9c8c2;background-position:0 1mm"></div>`);
   }
-}
-mes('grid-ene',2027,0,fiestas);
-
-// ---------- semana ----------
-const trackers=['Oración','Rosario','Biblia','Agua','Ejercicio'];
-const tr=()=>`<div class="track">${trackers.map(t=>`<span><i></i>${t}</span>`).join('')}</div>`;
-function dia(n,w,s){return `<div class="dia"><div class="h"><span class="n">${n}</span><span class="w">${w}</span></div><div class="santo">${s||''}</div><div class="escribir"></div>${tr()}<div class="gracias"><span class="t">Gracias, Señor, por…</span></div></div>`}
-document.getElementById('sem-izq').innerHTML = dia(4,'Lunes')+dia(5,'Martes')+dia(6,'Miércoles','Epifanía del Señor');
-document.getElementById('sem-der').innerHTML = dia(7,'Jueves')+dia(8,'Viernes')+
-  `<div class="finde">${dia(9,'Sábado')}${dia(10,'Domingo','Bautismo del Señor')}</div>`;
+  der.insertAdjacentHTML('beforeend',`<div class="festivos" style="grid-row:${filas};grid-column:4"><div class="t">Días festivos</div><ul>${MES.festivos.map(f=>`<li class="${f.fer?'fer':''} ${f.pre?'pre':''}">${f.d} ${f.t}</li>`).join('')}</ul></div>`);
+  der.insertAdjacentHTML('beforeend',`<div class="mision" style="grid-row:${filas+1};grid-column:4"><div class="cinta">Misión secreta<br>del mes ✦</div><b>${MES.mision.t}</b><p>${MES.mision.p}</p></div>`);
+})();
 </script>
 </body>
 </html>
