@@ -418,6 +418,125 @@ def p_despedida():
       <div style="margin-top:6mm">{lineas(12, 'ln lin-s')}</div>
       <div class="firma"><em>Estás en mis oraciones,</em><b>Megalücuma</b></div></div>''', 'Despedida')
 
+# ================================================================ CORRECCIONES 14.11.2026
+import sys
+REVISION = '--revision' in sys.argv
+
+CSS += r"""
+/* Lo que veo y leo */
+.vl-grid{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:2.6mm 2.4mm;height:calc(100% - 22mm)}
+.vl{display:flex;flex-direction:column;gap:1mm}
+.vl .pega{flex:1;border:.3mm dashed var(--oro);border-radius:1mm;background:rgba(255,255,255,.85)}
+.vl .est{text-align:center;color:var(--oro);font-size:8pt;letter-spacing:.6mm;line-height:1}
+.vl .tit{border-bottom:.2mm solid #cdb9b2;height:3.6mm}
+.vl-leyenda{display:flex;justify-content:center;gap:3mm;font-size:5.6pt;color:var(--suave);margin:-2mm 0 2.5mm}
+.vl-leyenda b{color:var(--m)}
+.tabla-lista td.t{width:4.8mm;text-align:center;color:#cdb9b2;font-size:6pt}
+.tabla-lista th.t{width:4.8mm;padding:1.4mm 0}
+.tabla-lista td.e{width:16mm;text-align:center;color:var(--oro);font-size:6pt;letter-spacing:.3mm}
+/* Panorama reorganizado */
+.pn2 .manos .tabla div{height:21mm}
+.pn2 .masmenos{grid-template-columns:42mm 1fr;margin:3mm 0}
+.pn2 .reflex2{display:grid;grid-template-columns:1fr 34mm;gap:2.5mm;height:44mm}
+.pn2 .reflex2 .caja.r{background:var(--fondo-rose);border-color:var(--oro)}
+.pn2 .reflex2 .r .gt{font-family:'Fraunces',serif;font-style:italic;font-size:8.5pt;color:var(--m)}
+.pn2 .reflex2 .r p{font-size:5.6pt;color:var(--suave);font-style:italic;margin-top:.5mm}
+.pn2 .abajo2{display:grid;grid-template-columns:1fr 1fr 30mm;gap:2.5mm;height:43mm}
+.forma2{position:relative;border-radius:1mm}
+.forma2 svg{position:absolute;inset:0;width:100%;height:100%}
+.forma2 .t2{position:absolute;left:0;right:0;text-align:center;font-family:'Fraunces',serif;font-style:italic;font-size:7.6pt;color:var(--m);line-height:1.15}
+.pn2 .prio{margin-bottom:3mm}
+.pn2 .prio .caja{height:21mm}
+.pn2 .tri.a{height:44mm;margin-bottom:3mm}
+.pn2 .tri.b{height:40mm;margin-bottom:3mm}
+"""
+
+def p_veo_leo():
+    caja = '<div class="vl"><div class="pega"></div><div class="tit"></div><div class="est">☆☆☆☆☆</div></div>'
+    tipos = [('L','libro'),('P','película'),('D','documental'),('V','video'),('T','obra de teatro')]
+    ley = '<div class="vl-leyenda">' + ''.join(f'<span><b>{a}</b> {b}</span>' for a, b in tipos) + '</div>'
+    filas = ''.join('<tr><td></td>' + '<td class="t">○</td>'*5 + '<td class="e">☆☆☆☆☆</td></tr>' for _ in range(22))
+    a = pag('eventos', f'''{FONDO}<div class="safe">{banda("Lo que veo y leo")}
+      <div class="sub-pag" style="text-align:center;margin:-2mm 0 2.5mm">Pega la portada, la entrada o el afiche, y califícalo</div>
+      <div class="vl-grid">{caja*16}</div></div>''', 'Lo que veo y leo · tracker', '#4a4526')
+    b = pag('', f'''<div class="safe">{banda("Lo que veo y leo")}{ley}
+      <table class="tabla-lista"><tr><th style="text-align:left">Título</th>{"".join(f'<th class="t">{x}</th>' for x,_ in tipos)}<th>Me gustó</th></tr>{filas}</table></div>''',
+      'Lo que veo y leo · tracker', '#4a4526')
+    return (a, b)
+
+def p_highlights(m):
+    """Calendario mensual en doble página, igual al modelo de la agenda 2026."""
+    color = COLOR_MES[m-1]; ini, filas = semanas_cal(m)
+    fest = [(d, v) for (mm, d), v in sorted(F.items()) if mm == m]
+    span_f = 2 if (len(fest) > 6 or filas == 6) else 1
+    def celda(fe, fila, colu):
+        st = f'grid-row:{fila+2};grid-column:{colu}'
+        if fe.month != m: return f'<div class="c vacio" style="{st}"></div>'
+        x = F.get((m, fe.day)); fer = 'fer' if (x and x[1]) else ''
+        return f'<div class="c {fer}" style="{st}"><span class="n">{fe.day}</span></div>'
+    izq = ''.join(f'<div class="dw">{d}</div>' for d in DIAS[:4])
+    der = ''.join(f'<div class="dw">{d}</div>' for d in DIAS[4:]) + '<div class="dw">Pendientes del mes</div>'
+    for r in range(filas):
+        for c in range(7):
+            fe = ini + dt.timedelta(days=r*7 + c)
+            if c < 4: izq += celda(fe, r, c + 1)
+            else: der += celda(fe, r, c - 3)
+    n_pend = filas - 1 - span_f
+    der += f'<div class="pend lin" style="grid-row:2 / span {n_pend};grid-column:4;--lc:#d9c8c2;background-position:0 1mm"></div>'
+    lis = ''.join(f'<li class="{"fer" if v[1] else ""} {"pre" if v[2] else ""}">{d} {esc(v[0])}</li>' for d, v in fest)
+    der += f'<div class="festivos" style="grid-row:{2+n_pend} / span {span_f};grid-column:4"><div class="t">Días festivos</div><ul>{lis}</ul></div>'
+    der += f'<div class="mision" style="grid-row:{filas+1};grid-column:4"><div class="cinta">Misión secreta<br>del mes ✦</div><b>(Título)</b><p>(Pendiente)</p></div>'
+    rows = f'grid-template-rows:6mm repeat({filas},1fr)'
+    a = pag('cm', f'''<div class="safe"><div class="cab"><h2>{MESES[m-1]}</h2><div class="fr"><i>«Frase bonita del mes (pendiente)».</i> — <b>Autor</b></div></div>
+         <div class="rejilla" style="{rows}">{izq}</div></div>''', f'{MESES[m-1]} · Highlights', color)
+    b = pag('cm', f'''<div class="pestana-mes" style="top:{16 + (m-1)*12.5}mm">{ABR[m-1]}</div><div class="safe"><div class="cab">
+         <div class="player"><div class="ico">▶</div><div class="info"><div class="tt">Canción o video del mes (pendiente)</div><div class="bar"></div><div class="ctl"><span>⏮</span><span class="pl">▶</span><span>⏭</span></div></div></div>
+         <div class="qrbox">QR</div></div>
+         <div class="rejilla" style="{rows}">{der}</div></div>''', f'{MESES[m-1]} · Highlights', color)
+    return (a, b)
+
+def p_panorama(m):
+    """Panorama reorganizado: izquierda lo espiritual, derecha lo práctico (corrección 14.11)."""
+    color = COLOR_MES[m-1]; L = lambda n: lineas(n)
+    pat = f'<defs><pattern id="pp{m}" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r=".55" fill="#c9b6b0"/></pattern></defs>'
+    bulbo = f'''<svg viewBox="0 0 100 130" preserveAspectRatio="xMidYMid meet">{pat}
+      <path d="M50 14C28 14 14 30 14 50c0 14 7 23 14 31 5 6 7 11 7 17h30c0-6 2-11 7-17 7-8 14-17 14-31 0-20-14-36-36-36z" fill="url(#pp{m})" stroke="{color}" stroke-width="1.3"/>
+      <rect x="36" y="101" width="28" height="6" rx="3" fill="none" stroke="{color}" stroke-width="1.3"/><rect x="38" y="109" width="24" height="6" rx="3" fill="none" stroke="{color}" stroke-width="1.3"/><path d="M44 118h12" stroke="{color}" stroke-width="1.3" stroke-linecap="round"/>
+      <g stroke="#c3934b" stroke-width="1.5" stroke-linecap="round"><path d="M50 2v6M14 12l4 4M86 12l-4 4M2 48h6M98 48h-6"/></g></svg>'''
+    nube = f'''<svg viewBox="0 0 130 100" preserveAspectRatio="xMidYMid meet">{pat}
+      <path d="M30 88C15 88 6 78 6 66c0-11 8-19 18-21-1-16 11-29 28-29 10 0 18 5 23 12 4-4 11-7 18-7 16 0 28 12 28 27v2c7 3 12 10 12 18 0 12-10 20-23 20z" fill="url(#pp{m})" stroke="{color}" stroke-width="1.3"/>
+      <g fill="#c3934b"><path d="M112 12l1.2-3 1.2 3 3 1.2-3 1.2-1.2 3-1.2-3-3-1.2z"/><path d="M14 20l1-2.4 1 2.4 2.4 1-2.4 1-1 2.4-1-2.4-2.4-1z"/></g></svg>'''
+    a = pag('pn pn2', f'''<div class="safe">
+      <div class="pn-cab"><div class="titulo">Panorama<br>del mes</div><p>{MESES[m-1]} {AÑO}<br>Un espacio para organizar, descubrir, disfrutar y agradecer a Dios.</p></div>
+      <div class="frase"><div class="t">Frase del mes <span>o cita bíblica</span></div>{L(2)}</div>
+      <div class="manos"><h3>Este mes pongo en tus manos, <i>Espíritu Santo</i></h3>
+        <div class="tabla"><div><span>Alma</span></div><div><span>Corazón</span></div><div><span>Salud</span></div><div><span>Mente</span></div><div class="otros"><span>Otros:</span></div></div></div>
+      <div class="masmenos"><div class="mm"><div class="t">♡ Hacer más de</div>{L(3)}<div class="t" style="margin-top:2.5mm">⊘ Hacer menos de</div>{L(3)}</div>
+        <div class="caja gracias-box"><div class="gt">Gracias, Señor, por los regalos de este mes</div></div></div>
+      <div class="reflex2">
+        <div class="caja r pts"><div class="gt">Una reflexión para guardar</div><p>Un pensamiento, oración o algo que me hizo mirar las cosas de otra manera.</p></div>
+        <div class="caja gusto"><div class="t">Un pequeño gusto para mí</div><div class="ola"></div><div class="ola"></div><div class="ola"></div><div class="ola"></div><div class="ola"></div></div>
+      </div></div>''', f'{MESES[m-1]} · Panorama', color)
+    b = pag('pn pn2', f'''<div class="safe">
+      <div class="t">Este mes… mis 3 prioridades</div>
+      <div class="prio"><div class="caja pts"><b>1</b></div><div class="caja pts"><b>2</b></div><div class="caja pts"><b>3</b></div></div>
+      <div class="tri a">
+        <div class="caja compras"><div class="t">Compras importantes</div>{L(6)}</div>
+        <div class="caja arquito pts" style="text-align:center;padding-top:4mm"><div class="t">Pendientes<br>en casa</div></div>
+        <div class="caja balance"><div class="t">Balance del mes</div><div class="f">Presupuesto<span>S/</span></div><div class="f">Ingreso extra<span>S/</span></div><div class="f">Gastos<span>S/</span></div><div class="f">Ahorro<span>S/</span></div></div>
+      </div>
+      <div class="tri b">
+        <div class="descub"><div class="cinta-t">Pequeños descubrimientos</div><div class="f">Canción:<i></i></div><div class="f">Lugar:<i></i></div><div class="f">Receta:<i></i></div><div class="f">Otro:<i></i></div></div>
+        <div style="display:flex;flex-direction:column"><div class="cinta-t" style="align-self:center">No olvidar</div><div class="caja pts" style="flex:1"><span class="pin"></span></div></div>
+        <div style="display:flex;flex-direction:column"><div class="cinta-t" style="align-self:center">Fechas importantes</div><div class="caja" style="flex:1">{L(4)}</div></div>
+      </div>
+      <div class="abajo2">
+        <div class="forma2">{bulbo}<div class="t2" style="top:42%">Una<br>idea</div></div>
+        <div class="forma2">{nube}<div class="t2" style="top:52%">Algo que quiero<br>retomar o aprender</div></div>
+        <div class="caja visitar"><div class="t">Visitar a:</div><div class="f">1<i></i></div><div class="f">2<i></i></div><div class="f">3<i></i></div><div class="f">4<i></i></div></div>
+      </div></div>''', f'{MESES[m-1]} · Panorama', color)
+    return (a, b)
+
 # ---------------------------------------------------------------- reutiliza páginas ya diseñadas en la muestra
 muestra = open(os.path.join(AQUI, 'muestra.html')).read()
 def seccion(patron):
@@ -444,8 +563,7 @@ doc += [(p_anual(AÑO), p_anual(AÑO + 1))]                   # 8  Calendario 20
 doc += [p_doce('Eventos importantes')]                      # 9
 doc += [p_prop()]                                           # 10
 doc += [p_collage()]                                        # 11
-doc += [p_doce('Libros y lecturas', color='#4a4526')]       # 12
-doc += [p_peliculas()]                                      # 13
+doc += [p_veo_leo()]                                        # 12-13 Lo que veo y leo (corrección 14.11)
 doc += [p_habla()]                                          # 14
 doc += [p_coleccion()]                                      # 15
 doc += [p_victorias()]                                      # 16
@@ -454,7 +572,9 @@ for m in range(1, 13): doc += [p_highlights(m)]             # 18 Calendario high
 for m in range(1, 13):                                      # 19-22 Sección de cada mes
     doc += [p_caratula(m)]   # el reverso de la carátula es la página izquierda del Panorama
     doc += [p_panorama(m)]
-    for k, l in enumerate(semanas_mes(m), 1): doc += [p_semana(m, l, k)]
+    sems = semanas_mes(m)
+    if REVISION: sems = sems[1:2]   # PDF de revisión: solo una semana por mes
+    for k, l in enumerate(sems, 1): doc += [p_semana(m, l, 2 if REVISION else k)]
     doc += [p_lo_mejor(m)]
 doc += [p_despedida()]                                      # Despedida
 doc += [p_puntos() for _ in range(8)]                       # Hojas de puntitos libres
@@ -485,5 +605,5 @@ doc_html = f'''<!doctype html><html lang="es"><head><meta charset="utf-8"><title
 </style></head><body>
 {chr(10).join(out)}
 </body></html>'''
-open(os.path.join(AQUI, 'agenda-2027.html'), 'w').write(doc_html)
+open(os.path.join(AQUI, 'agenda-2027-revision.html' if REVISION else 'agenda-2027.html'), 'w').write(doc_html)
 print('páginas:', len(paginas))

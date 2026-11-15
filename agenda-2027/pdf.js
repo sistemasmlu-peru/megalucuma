@@ -3,8 +3,10 @@
 const { chromium } = require('playwright');
 const path = require('path');
 (async () => {
-  const src = path.resolve(__dirname, 'agenda-2027.html');
-  const out = path.resolve(__dirname, 'Planner-2027-interior.pdf');
+  // Con "--revision" usa la versión liviana (una semana por mes)
+  const rev = process.argv.includes('--revision');
+  const src = path.resolve(__dirname, rev ? 'agenda-2027-revision.html' : 'agenda-2027.html');
+  const out = path.resolve(__dirname, rev ? 'Planner-2027-revision.pdf' : 'Planner-2027-interior.pdf');
   const b = await chromium.launch();
   const p = await b.newPage();
   await p.goto('file://' + src);
